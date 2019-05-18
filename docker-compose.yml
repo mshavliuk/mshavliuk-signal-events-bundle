@@ -1,0 +1,17 @@
+version: '3'
+services:
+  app:
+    image: thecodingmachine/php:7.3-v2-cli
+    environment:
+      PHP_EXTENSION_PCNTL: 1
+      PHP_EXTENSION_XDEBUG: 1
+      PHP_IDE_CONFIG: "serverName=signal-handler"
+      XDEBUG_CONFIG: "remote_autostart=1"
+    volumes:
+      - .:/usr/src/app:rw
+
+
+
+
+
+
