@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace Mshavliuk\SymfonySignalHandler\Service;
 
+use RuntimeException;
+
 class SignalHandlerService
 {
     public const SIGNALS = [
@@ -62,24 +64,71 @@ class SignalHandlerService
 
     public function __construct()
     {
+        pcntl_async_signals(true);
     }
 
 
-    public function setSignalHandler(callable $function, array $signals = [SIGINT, SIGTERM, SIGHUP]): int
-    {
-        pcntl_async_signals(true);
+    public function setSignalHandler(
+        callable $callback,
+        array $signals = [SIGINT, SIGTERM, SIGHUP],
+        $throwOnError = true
+    ): int {
+
+        $callbackId = count($this->callbacks);
+        $this->callbacks[$callbackId] = $callback;
+        // TODO: check unsupported signals
 
         foreach ($signals as $signal) {
-            pcntl_signal($signal, $function);
+            if(!isset($this->callbacks[$signal])) {
+                $this->signalCallbacks[$signal] = [];
+            }
+
+            $this->signalCallbacks[$signal][] = [
+                'id' => $callbackId,
+                'state' => self::STATE_ENABLED
+            ];
+            /** @noinspection NotOptimalIfConditionsInspection */
+            if (!pcntl_signal($signal, [$this, 'handleSignal']) && $throwOnError) {
+                throw new RuntimeException('Cannot set signal handler');
+            }
         }
 
-        return 0; // TODO: return handler id
+        return $callbackId;
+    }
+
+    protected function handleSignal($signal, $signalInfo = null)
+    {
+        foreach ($this->signalCallbacks[$signal] as ['id' => $callbackId, 'state' => $state]) {
+            if($state !== self::STATE_ENABLED) {
+                continue;
+            }
+
+            $callback = $this->callbacks[$callbackId];
+            $callback($signal, $signalInfo);
+        }
     }
 
 
-    public function removeSignalHandler(int $handlerId)
+    public function disableSignalHandler(int $callbackId, $signal = null)
     {
-        pcntl_async_signals(false);
-        // TODO: remove signal handler
+        if($signal !== null) {
+            return $this->disableSignalCallback($signal, $callbackId);
+        }
+
+        foreach ($this->signalCallbacks as $signal => $callbacks) {
+            $this->disableSignalCallback($signal, $callbackId);
+        }
+        return true;
+    }
+
+    protected function disableSignalCallback($signal, $callbackId)
+    {
+        $callbacks = $this->signalCallbacks[$signal];
+        foreach ($callbacks as $index => ['id' => $id, 'state' => $state]) {
+            if($callbackId === $id) {
+                $callbacks[$index]['state'] = self::STATE_DISABLED;
+            }
+        }
+        return true;
     }
 }
