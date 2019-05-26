@@ -2,12 +2,9 @@
 
 namespace Mshavliuk\SignalEventsBundle\DependencyInjection;
 
-use function method_exists;
-use RuntimeException;
-use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
-use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
+use function method_exists;
 
 class Configuration implements ConfigurationInterface
 {
@@ -16,7 +13,7 @@ class Configuration implements ConfigurationInterface
      *
      * @return TreeBuilder
      */
-    public function getConfigTreeBuilder() : TreeBuilder
+    public function getConfigTreeBuilder(): TreeBuilder
     {
         $builder = new TreeBuilder('signal_events');
 
@@ -30,8 +27,24 @@ class Configuration implements ConfigurationInterface
         $root
             ->children()
                 ->booleanNode('logging')->defaultValue('%signal_events.logging%')->end()
-                ->arrayNode('handle_signals')->defaultValue('%signal_events.handle_signals%')->end()
-            ->end();
+                ->arrayNode('start_at')->beforeNormalization()
+                    ->ifString()
+                        ->then(static function ($v) { return [$v];})
+                    ->end()
+                    ->requiresAtLeastOneElement()
+                    ->prototype('scalar')
+                    ->defaultValue('%signal_events.start_at%')
+                    ->end()
+                ->end()
+                ->arrayNode('handle_signals')->beforeNormalization()
+                    ->ifString()
+                        ->then(static function ($v) { return [$v];})
+                    ->end()
+                    ->requiresAtLeastOneElement()
+                    ->prototype('scalar')
+                    ->defaultValue('%signal_events.handle_signals%')
+                    ->end()
+                ->end();
 
         return $builder;
     }
