@@ -3,7 +3,10 @@ declare(strict_types=1);
 
 namespace Mshavliuk\SignalEventsBundle\Service;
 
+use Mshavliuk\SignalEventsBundle\Event\SignalEvent;
 use RuntimeException;
+use Symfony\Component\EventDispatcher\EventDispatcher;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class SignalHandlerService
 {
@@ -51,45 +54,26 @@ class SignalHandlerService
         'SIGSTOP' => SIGSTOP,
     ];
 
-    protected const STATE_ENABLED = 'enabled';
-    protected const STATE_DISABLED = 'disabled';
+    /**
+     * @var EventDispatcherInterface
+     */
+    protected $dispatcher;
+    protected $handledSignals;
 
-    protected $callbacks = [];
-    protected $signalCallbacks = [];
 
-
-    public function __construct()
+    public function __construct(EventDispatcherInterface $dispatcher, $signals)
     {
         pcntl_async_signals(true);
-    }
 
+        $this->dispatcher = $dispatcher;
 
-    public function addSignalHandler(
-        callable $callback,
-        array $signals = [SIGINT, SIGTERM, SIGHUP],
-        $throwOnError = true
-    ): int {
-
-        $callbackId = count($this->callbacks);
-        $this->callbacks[$callbackId] = $callback;
-        // TODO: check unsupported signals
+        $this->handledSignals = $signals;
 
         foreach ($signals as $signal) {
-            if(!isset($this->callbacks[$signal])) {
-                $this->signalCallbacks[$signal] = [];
-            }
-
-            $this->signalCallbacks[$signal][] = [
-                'id' => $callbackId,
-                'state' => self::STATE_ENABLED
-            ];
-            /** @noinspection NotOptimalIfConditionsInspection */
-            if (!pcntl_signal($signal, [$this, 'handleSignal']) && $throwOnError) {
+            if (!pcntl_signal($signal, [$this, 'handleSignal'])) {
                 throw new RuntimeException('Cannot set signal handler');
             }
         }
-
-        return $callbackId;
     }
 
     /**
@@ -100,39 +84,26 @@ class SignalHandlerService
      */
     public function handleSignal($signal, $signalInfo = null)
     {
-        foreach ($this->signalCallbacks[$signal] as ['id' => $callbackId, 'state' => $state]) {
-            if($state !== self::STATE_ENABLED) {
-                continue;
-            }
-
-            $callback = $this->callbacks[$callbackId];
-            $callback($signal, $signalInfo);
-        }
+        $event = new SignalEvent($signal, $signalInfo);
+        $this->dispatcher->dispatch($event, SignalEvent::NAME);
     }
 
 
-    public function disableSignalHandler(int $callbackId, $signal = null)
+    /**
+     * @return mixed
+     */
+    public function getHandledSignals()
     {
-        // TODO: disable all handler by given signal
-
-        if($signal !== null) {
-            return $this->disableSignalCallback($signal, $callbackId);
-        }
-
-        foreach ($this->signalCallbacks as $signal => $callbacks) {
-            $this->disableSignalCallback($signal, $callbackId);
-        }
-        return true;
+        return $this->handledSignals;
     }
 
-    protected function disableSignalCallback($signal, $callbackId)
+    /**
+     * @inheritDoc
+     */
+    public function __destruct()
     {
-        $callbacks = $this->signalCallbacks[$signal];
-        foreach ($callbacks as $index => ['id' => $id, 'state' => $state]) {
-            if($callbackId === $id) {
-                $callbacks[$index]['state'] = self::STATE_DISABLED;
-            }
-        }
-        return true;
+        pcntl_async_signals(false);
     }
+
+
 }

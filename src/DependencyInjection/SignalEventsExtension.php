@@ -3,7 +3,11 @@
 namespace Mshavliuk\SignalEventsBundle\DependencyInjection;
 
 use Exception;
+use Mshavliuk\SignalEventsBundle\EventListener\ServiceStartupListener;
+use Mshavliuk\SignalEventsBundle\Service\SignalHandlerService;
+use Symfony\Component\Console\ConsoleEvents;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
@@ -21,15 +25,38 @@ class SignalEventsExtension extends Extension
     {
         $loader = new YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
 
-        $loader->load('services.xml');
+        $loader->load('services.yaml');
 
         $configuration = new Configuration();
         $config        = $this->processConfiguration($configuration, $configs);
         $logging       = $config['logging'] === true;
 
-        foreach ($config['handle_signals'] as $signalName) {
-            echo $signalName;
-        }
+        $this->defineHandleService($container);
+        $this->defineEventListener($container);
+    }
+
+
+    /**
+     * @param ContainerBuilder $container
+     *
+     * @return void
+     */
+    protected function defineHandleService(ContainerBuilder $container)
+    {
+        $serviceDefinition = new Definition(SignalHandlerService::class);
+        $serviceDefinition->setArguments(['$signals' => '%signal_events.handle_signals%']);
+        $serviceDefinition->setPublic(true);
+        $serviceDefinition->setAutowired(true);
+        $container->setDefinition(SignalHandlerService::class, $serviceDefinition);
+        $container->setAlias('signal_events.handle_service', SignalHandlerService::class);
+    }
+
+    protected function defineEventListener(ContainerBuilder $container)
+    {
+        $serviceDefinition = new Definition(ServiceStartupListener::class);
+        $serviceDefinition->setAutowired(true);
+        $serviceDefinition->addTag('kernel.event_listener', ['event' => ConsoleEvents::COMMAND, 'method' => 'handleStartupEvent']);
+        $container->setDefinition(ServiceStartupListener::class, $serviceDefinition);
     }
 
     /**
