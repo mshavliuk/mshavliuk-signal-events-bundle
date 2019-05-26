@@ -7,10 +7,8 @@ use RuntimeException;
 
 class SignalHandlerService
 {
-    public const SIGNALS = [
+    public const SUPPORTED_SIGNALS = [
         'SIG_IGN' => SIG_IGN,
-        'SIG_DFL' => SIG_DFL,
-        'SIG_ERR' => SIG_ERR,
         'SIGHUP' => SIGHUP,
         'SIGINT' => SIGINT,
         'SIGQUIT' => SIGQUIT,
@@ -20,7 +18,6 @@ class SignalHandlerService
         'SIGIOT' => SIGIOT,
         'SIGBUS' => SIGBUS,
         'SIGFPE' => SIGFPE,
-        'SIGKILL' => SIGKILL,
         'SIGUSR1' => SIGUSR1,
         'SIGSEGV' => SIGSEGV,
         'SIGUSR2' => SIGUSR2,
@@ -31,7 +28,6 @@ class SignalHandlerService
         'SIGCLD' => SIGCLD,
         'SIGCHLD' => SIGCHLD,
         'SIGCONT' => SIGCONT,
-        'SIGSTOP' => SIGSTOP,
         'SIGTSTP' => SIGTSTP,
         'SIGTTIN' => SIGTTIN,
         'SIGTTOU' => SIGTTOU,

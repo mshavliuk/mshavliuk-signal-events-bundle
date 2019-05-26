@@ -1,0 +1,3 @@
+parameters:
+  logging: true
+  handle_signals: !php/const Mshavliuk\SignalEventsBundle\Service\SignalHandlerService::SUPPORTED_SIGNALS
