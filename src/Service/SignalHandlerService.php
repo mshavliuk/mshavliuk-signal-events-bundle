@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Mshavliuk\SymfonySignalHandler\Service;
+namespace Mshavliuk\SignalEventsBundle\Service;
 
 use RuntimeException;
 
@@ -68,7 +68,7 @@ class SignalHandlerService
     }
 
 
-    public function setSignalHandler(
+    public function addSignalHandler(
         callable $callback,
         array $signals = [SIGINT, SIGTERM, SIGHUP],
         $throwOnError = true
@@ -96,7 +96,13 @@ class SignalHandlerService
         return $callbackId;
     }
 
-    protected function handleSignal($signal, $signalInfo = null)
+    /**
+     * @param $signal
+     * @param null $signalInfo
+     *
+     * @internal
+     */
+    public function handleSignal($signal, $signalInfo = null)
     {
         foreach ($this->signalCallbacks[$signal] as ['id' => $callbackId, 'state' => $state]) {
             if($state !== self::STATE_ENABLED) {
@@ -111,6 +117,8 @@ class SignalHandlerService
 
     public function disableSignalHandler(int $callbackId, $signal = null)
     {
+        // TODO: disable all handler by given signal
+
         if($signal !== null) {
             return $this->disableSignalCallback($signal, $callbackId);
         }
