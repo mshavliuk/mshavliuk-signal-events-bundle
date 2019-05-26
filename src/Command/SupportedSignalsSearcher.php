@@ -23,7 +23,7 @@ class SupportedSignalsSearcher extends Command
         $supportedSignals = [];
         $phpVersion = PHP_VERSION;
         $output->writeln('php version: ' . $phpVersion);
-        foreach (SignalHandlerService::SIGNALS as $signalName => $signal) {
+        foreach (SignalHandlerService::SUPPORTED_SIGNALS as $signalName => $signal) {
             $process = new Process(['bin/console', 'signal-handler', $signalName]);
             $process->start();
             $process->setTimeout(5000);

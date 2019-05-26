@@ -37,10 +37,8 @@ class SignalHandlerServiceTest extends TestCase
 
     public function providerSignalNames()
     {
-        foreach (SignalHandlerService::SIGNALS as $signalName => $signal) {
-            if(!in_array($signal, SignalHandlerService::UNSUPPORTED_SIGNALS, true)) {
-                yield $signalName => [$signalName, $signal];
-            }
+        foreach (SignalHandlerService::SUPPORTED_SIGNALS as $signalName => $signal) {
+            yield $signalName => [$signalName, $signal];
         }
     }
 }
