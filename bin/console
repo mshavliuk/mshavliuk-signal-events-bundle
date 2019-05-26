@@ -2,9 +2,9 @@
 
 <?php
 
-use Mshavliuk\SymfonySignalHandler\Command\SupportedSignalsSearcher;
-use Mshavliuk\SymfonySignalHandler\Command\SignalHandlerCommand;
-use Mshavliuk\SymfonySignalHandler\Service\SignalHandlerService;
+use Mshavliuk\SignalEventsBundle\Command\SupportedSignalsSearcher;
+use Mshavliuk\SignalEventsBundle\Command\SignalHandlerCommand;
+use Mshavliuk\SignalEventsBundle\Service\SignalHandlerService;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Input\ArgvInput;
 use Symfony\Component\DependencyInjection\ContainerBuilder;

@@ -1,10 +1,10 @@
 <?php
 
 
-namespace Mshavliuk\SymfonySignalHandler\Command;
+namespace Mshavliuk\SignalEventsBundle\Command;
 
 
-use Mshavliuk\SymfonySignalHandler\Service\SignalHandlerService;
+use Mshavliuk\SignalEventsBundle\Service\SignalHandlerService;
 use RuntimeException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -26,7 +26,7 @@ class SupportedSignalsSearcher extends Command
         foreach (SignalHandlerService::SIGNALS as $signalName => $signal) {
             $process = new Process(['bin/console', 'signal-handler', $signalName]);
             $process->start();
-            $process->setTimeout(5);
+            $process->setTimeout(5000);
             try {
                 $process->waitUntil(
                     static function ($type, $data) {

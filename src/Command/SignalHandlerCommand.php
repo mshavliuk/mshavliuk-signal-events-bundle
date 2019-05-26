@@ -2,10 +2,10 @@
 declare(strict_types=1);
 
 
-namespace Mshavliuk\SymfonySignalHandler\Command;
+namespace Mshavliuk\SignalEventsBundle\Command;
 
 
-use Mshavliuk\SymfonySignalHandler\Service\SignalHandlerService;
+use Mshavliuk\SignalEventsBundle\Service\SignalHandlerService;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -44,7 +44,7 @@ class SignalHandlerCommand extends Command
         }
         $handledSignal = null;
 
-        $this->signalHandlerService->setSignalHandler(
+        $this->signalHandlerService->addSignalHandler(
             static function ($signal) use ($output, $signalName) {
                 $output->writeln("Successfully handle $signalName ($signal) signal");
             die(0);

@@ -1,8 +1,8 @@
 {
-    "name":        "mshavliuk/symfony-signal-handler",
-    "type":        "library",
-    "description": "Symfony handler service to handle process signals (kill, ctrl+c etc.)",
-    "keywords":    ["symfony", "console", "pcntl", "cli"],
+    "name":        "mshavliuk/symfony-signal-events-bundle",
+    "type":        "symfony-bundle",
+    "description": "Symfony bundle to handle process signals (kill, ctrl+c etc.)",
+    "keywords":    ["symfony", "console", "pcntl", "cli", "bundle"],
     "homepage":    "http://github.com/mshavliuk/symfony-signal-handler",
     "license":     "MIT",
     "support":     {
@@ -16,14 +16,16 @@
     ],
     "require": {
         "php": "~7.1",
-        "ext-pcntl": "*"
+        "ext-pcntl": "*",
+        "symfony/event-dispatcher": "^4.4@dev"
     },
     "autoload": {
         "psr-4": {
-            "Mshavliuk\\SymfonySignalHandler\\": "src/"
+            "Mshavliuk\\SignalEventsBundle\\": "src/"
         }
     },
     "require-dev": {
+        "roave/security-advisories": "dev-master",
         "phpunit/phpunit": "^8.1",
         "symfony/process": "^4.2",
         "symfony/console": "~2.3 || ~3.0 || ~4.0",
