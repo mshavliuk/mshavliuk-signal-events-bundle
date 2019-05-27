@@ -1,8 +1,6 @@
 <?php
 
-
 namespace Mshavliuk\SignalEventsBundle;
-
 
 use Mshavliuk\SignalEventsBundle\DependencyInjection\SignalEventsExtension;
 use Mshavliuk\SignalEventsBundle\Service\SignalHandlerService;
@@ -17,7 +15,7 @@ class SignalEventsBundle extends Bundle
     private $signalHandlerService;
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function shutdown()
     {
@@ -25,7 +23,7 @@ class SignalEventsBundle extends Bundle
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function build(ContainerBuilder $container)
     {
@@ -33,7 +31,7 @@ class SignalEventsBundle extends Bundle
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function boot()
     {
@@ -41,11 +39,10 @@ class SignalEventsBundle extends Bundle
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     protected function createContainerExtension()
     {
         return new SignalEventsExtension();
     }
-
 }

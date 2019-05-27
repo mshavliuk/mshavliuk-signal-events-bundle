@@ -1,9 +1,8 @@
 <?php
+
 declare(strict_types=1);
 
-
 namespace Mshavliuk\SignalEventsBundle\Command;
-
 
 use Mshavliuk\SignalEventsBundle\Service\SignalHandlerService;
 use Symfony\Component\Console\Command\Command;
@@ -38,8 +37,9 @@ class SignalHandlerCommand extends Command
     {
         $signalName = $input->getArgument(self::SIGNAL_ARGUMENT);
         $signal = constant($signalName);
-        if ($signal === null) {
+        if (null === $signal) {
             $output->writeln('PHP don\'t know this type of signal');
+
             return 1;
         }
         $handledSignal = null;
@@ -47,14 +47,14 @@ class SignalHandlerCommand extends Command
         $this->signalHandlerService->addSignalHandler(
             static function ($signal) use ($output, $signalName) {
                 $output->writeln("Successfully handle $signalName ($signal) signal");
-            die(0);
-        }, [$signal]);
+                die(0);
+            }, [$signal]);
 
         $output->writeln(self::READY_MESSAGE);
         while (true) {
-            usleep((int)1e3);
+            usleep((int) 1e3);
         }
+
         return 2;
     }
-
 }

@@ -1,8 +1,6 @@
 <?php
 
-
 namespace Mshavliuk\SignalEventsBundle\Event;
-
 
 use Symfony\Contracts\EventDispatcher\Event;
 

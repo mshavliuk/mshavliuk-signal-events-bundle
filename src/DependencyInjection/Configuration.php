@@ -9,7 +9,7 @@ use function method_exists;
 class Configuration implements ConfigurationInterface
 {
     /**
-     * Generates the configuration tree builder
+     * Generates the configuration tree builder.
      *
      * @return TreeBuilder
      */
@@ -28,7 +28,7 @@ class Configuration implements ConfigurationInterface
             ->children()
                 ->arrayNode('start_at')->beforeNormalization()
                     ->ifString()
-                        ->then(static function ($v) { return [$v];})
+                        ->then(static function ($v) { return [$v]; })
                     ->end()
                     ->requiresAtLeastOneElement()
                     ->prototype('scalar')
@@ -37,7 +37,7 @@ class Configuration implements ConfigurationInterface
                 ->end()
                 ->arrayNode('handle_signals')->beforeNormalization()
                     ->ifString()
-                        ->then(static function ($v) { return [$v];})
+                        ->then(static function ($v) { return [$v]; })
                     ->end()
                     ->requiresAtLeastOneElement()
                     ->prototype('scalar')

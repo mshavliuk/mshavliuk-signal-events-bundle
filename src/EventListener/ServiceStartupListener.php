@@ -1,14 +1,11 @@
 <?php
 
-
 namespace Mshavliuk\SignalEventsBundle\EventListener;
 
 use Exception;
 use Mshavliuk\SignalEventsBundle\Service\SignalHandlerService;
 use Symfony\Component\Console\Event\ConsoleCommandEvent;
 use Symfony\Component\DependencyInjection\Container;
-use Symfony\Component\DependencyInjection\ContainerAwareInterface;
-use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Contracts\EventDispatcher\Event;
 
@@ -24,11 +21,11 @@ class ServiceStartupListener
         $this->container = $container;
     }
 
-
     protected $startupEvents;
 
     /**
      * @param Event|ConsoleCommandEvent $event
+     *
      * @throws Exception
      */
     public function handleStartupEvent($event)
