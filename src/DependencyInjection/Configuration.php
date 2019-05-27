@@ -26,7 +26,6 @@ class Configuration implements ConfigurationInterface
 
         $root
             ->children()
-                ->booleanNode('logging')->defaultValue('%signal_events.logging%')->end()
                 ->arrayNode('start_at')->beforeNormalization()
                     ->ifString()
                         ->then(static function ($v) { return [$v];})
