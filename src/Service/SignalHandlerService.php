@@ -5,7 +5,6 @@ namespace Mshavliuk\SignalEventsBundle\Service;
 
 use Mshavliuk\SignalEventsBundle\Event\SignalEvent;
 use RuntimeException;
-use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class SignalHandlerService

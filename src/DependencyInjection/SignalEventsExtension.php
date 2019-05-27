@@ -27,10 +27,6 @@ class SignalEventsExtension extends Extension
 
         $loader->load('services.yaml');
 
-        $configuration = new Configuration();
-        $config        = $this->processConfiguration($configuration, $configs);
-        $logging       = $config['logging'] === true;
-
         $this->defineHandleService($container);
         $this->defineEventListener($container);
     }
@@ -41,22 +37,24 @@ class SignalEventsExtension extends Extension
      *
      * @return void
      */
-    protected function defineHandleService(ContainerBuilder $container)
+    protected function defineHandleService(ContainerBuilder $container): void
     {
-        $serviceDefinition = new Definition(SignalHandlerService::class);
-        $serviceDefinition->setArguments(['$signals' => '%signal_events.handle_signals%']);
-        $serviceDefinition->setPublic(true);
-        $serviceDefinition->setAutowired(true);
-        $container->setDefinition(SignalHandlerService::class, $serviceDefinition);
+        $definition = new Definition(SignalHandlerService::class);
+        $definition->setArguments(['$signals' => '%signal_events.handle_signals%']);
+        $definition->setPublic(true);
+        $definition->setAutowired(true);
+        $container->setDefinition(SignalHandlerService::class, $definition);
         $container->setAlias('signal_events.handle_service', SignalHandlerService::class);
     }
 
-    protected function defineEventListener(ContainerBuilder $container)
+    protected function defineEventListener(ContainerBuilder $container): void
     {
-        $serviceDefinition = new Definition(ServiceStartupListener::class);
-        $serviceDefinition->setAutowired(true);
-        $serviceDefinition->addTag('kernel.event_listener', ['event' => ConsoleEvents::COMMAND, 'method' => 'handleStartupEvent']);
-        $container->setDefinition(ServiceStartupListener::class, $serviceDefinition);
+        $definition = new Definition(ServiceStartupListener::class);
+        $definition->setAutowired(true);
+        foreach ($container->getParameter('signal_events.start_at') as $event) {
+            $definition->addTag('kernel.event_listener', ['event' => $event, 'method' => 'handleStartupEvent']);
+        }
+        $container->setDefinition(ServiceStartupListener::class, $definition);
     }
 
     /**
