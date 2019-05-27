@@ -1,8 +1,6 @@
 <?php
 
-
 namespace Mshavliuk\SignalEventsBundle\Command;
-
 
 use Mshavliuk\SignalEventsBundle\Service\SignalHandlerService;
 use RuntimeException;
@@ -22,7 +20,7 @@ class SupportedSignalsSearcher extends Command
     {
         $supportedSignals = [];
         $phpVersion = PHP_VERSION;
-        $output->writeln('php version: ' . $phpVersion);
+        $output->writeln('php version: '.$phpVersion);
         foreach (SignalHandlerService::SUPPORTED_SIGNALS as $signalName => $signal) {
             $process = new Process(['bin/console', 'signal-handler', $signalName]);
             $process->start();
@@ -30,27 +28,26 @@ class SupportedSignalsSearcher extends Command
             try {
                 $process->waitUntil(
                     static function ($type, $data) {
-                    return $type === 'out' && trim($data) === SignalHandlerCommand::READY_MESSAGE;
-                });
-                if($process->isRunning()) {
+                        return 'out' === $type && SignalHandlerCommand::READY_MESSAGE === trim($data);
+                    });
+                if ($process->isRunning()) {
                     $process->signal($signal);
                     $process->wait();
                 } else {
                     $output->writeln("$signalName: fail (process died while trying to start)");
                     continue;
                 }
-
             } catch (RuntimeException $e) {
                 $output->writeln("$signalName: fail (".$e->getMessage().')');
                 continue;
             } finally {
-                if($process->isRunning()) {
+                if ($process->isRunning()) {
                     $output->writeln('process stay running after signal');
                     $process->signal(SIGKILL);
                 }
             }
-            if($process->isSuccessful()) {
-                $output->writeln( "$signalName: success (" . $process->getExitCodeText() . ')');
+            if ($process->isSuccessful()) {
+                $output->writeln("$signalName: success (".$process->getExitCodeText().')');
                 $supportedSignals[] = $signalName;
             } else {
                 $output->writeln("$signalName: fail (process was halted)");
@@ -60,7 +57,7 @@ class SupportedSignalsSearcher extends Command
         $fp = fopen(dirname(__DIR__)."/../var/{$phpVersion}_supports.json", 'wb');
         fwrite($fp, json_encode([
             'phpVersion' => $phpVersion,
-            'supportedSignals' => $supportedSignals
+            'supportedSignals' => $supportedSignals,
         ]));
         fclose($fp);
     }

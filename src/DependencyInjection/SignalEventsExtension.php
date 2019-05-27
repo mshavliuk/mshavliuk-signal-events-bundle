@@ -5,7 +5,6 @@ namespace Mshavliuk\SignalEventsBundle\DependencyInjection;
 use Exception;
 use Mshavliuk\SignalEventsBundle\EventListener\ServiceStartupListener;
 use Mshavliuk\SignalEventsBundle\Service\SignalHandlerService;
-use Symfony\Component\Console\ConsoleEvents;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
@@ -19,6 +18,7 @@ class SignalEventsExtension extends Extension
      *
      * @param array $configs
      * @param ContainerBuilder $container
+     *
      * @throws Exception
      */
     public function load(array $configs, ContainerBuilder $container)
@@ -31,11 +31,8 @@ class SignalEventsExtension extends Extension
         $this->defineEventListener($container);
     }
 
-
     /**
      * @param ContainerBuilder $container
-     *
-     * @return void
      */
     protected function defineHandleService(ContainerBuilder $container): void
     {
@@ -58,7 +55,7 @@ class SignalEventsExtension extends Extension
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function getAlias()
     {
@@ -66,7 +63,7 @@ class SignalEventsExtension extends Extension
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function getConfiguration(array $config, ContainerBuilder $container)
     {

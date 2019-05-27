@@ -1,6 +1,6 @@
 <?php
-declare(strict_types=1);
 
+declare(strict_types=1);
 
 use Mshavliuk\SignalEventsBundle\Service\SignalHandlerService;
 use PHPUnit\Framework\TestCase;
@@ -13,7 +13,6 @@ class SignalHandlerServiceTest extends TestCase
         $handler = new SignalHandlerService();
         $this->assertInstanceOf(SignalHandlerService::class, $handler);
     }
-
 
     /**
      * @dataProvider providerSignalNames

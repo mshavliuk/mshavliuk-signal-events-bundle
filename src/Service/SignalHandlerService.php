@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Mshavliuk\SignalEventsBundle\Service;
@@ -59,7 +60,6 @@ class SignalHandlerService
     protected $dispatcher;
     protected $handledSignals;
 
-
     public function __construct(EventDispatcherInterface $dispatcher, $signals)
     {
         pcntl_async_signals(true);
@@ -87,7 +87,6 @@ class SignalHandlerService
         $this->dispatcher->dispatch($event, SignalEvent::NAME);
     }
 
-
     /**
      * @return mixed
      */
@@ -96,13 +95,8 @@ class SignalHandlerService
         return $this->handledSignals;
     }
 
-    /**
-     * @inheritDoc
-     */
     public function __destruct()
     {
         pcntl_async_signals(false);
     }
-
-
 }
