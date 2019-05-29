@@ -17,6 +17,7 @@ class ServiceStartupListener
 
     /**
      * ServiceStartupListener constructor.
+     *
      * @param ContainerInterface $container
      */
     public function __construct(ContainerInterface $container)

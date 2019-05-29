@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Mshavliuk\SignalEventsBundle\Service;
 
-use Closure;
 use Mshavliuk\SignalEventsBundle\Event\SignalEvent;
 use RuntimeException;
 use Symfony\Component\EventDispatcher\EventDispatcher;
@@ -16,7 +15,7 @@ class SignalHandlerService
     protected $dispatcher;
     /** @var array */
     protected $observableSignals;
-    /** @var Closure */
+    /** @var callable */
     private $signalHandler;
 
     /**
@@ -44,6 +43,11 @@ class SignalHandlerService
         return $this;
     }
 
+    /**
+     * @param int|string $signal
+     *
+     * @return SignalHandlerService
+     */
     public function removeObservableSignal($signal): self
     {
         $signalCode = $this->getSignalCode($signal);
@@ -63,6 +67,11 @@ class SignalHandlerService
         return $this->observableSignals;
     }
 
+    /**
+     * @param int|string $signal
+     *
+     * @return int
+     */
     private function getSignalCode($signal): int
     {
         $signalCode = null;
@@ -79,6 +88,9 @@ class SignalHandlerService
         return $signalCode;
     }
 
+    /**
+     * @return callable
+     */
     private function makeSignalHandler(): callable
     {
         return function (int $signal, $signalInfo = null) {
