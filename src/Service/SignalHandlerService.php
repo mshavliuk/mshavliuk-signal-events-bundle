@@ -12,47 +12,6 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class SignalHandlerService
 {
-    public const SUPPORTED_SIGNALS = [
-        'SIGHUP' => SIGHUP,
-        'SIGINT' => SIGINT,
-        'SIGQUIT' => SIGQUIT,
-        'SIGILL' => SIGILL,
-        'SIGTRAP' => SIGTRAP,
-        'SIGABRT' => SIGABRT,
-        'SIGIOT' => SIGIOT,
-        'SIGBUS' => SIGBUS,
-        'SIGFPE' => SIGFPE,
-        'SIGUSR1' => SIGUSR1,
-        'SIGSEGV' => SIGSEGV,
-        'SIGUSR2' => SIGUSR2,
-        'SIGPIPE' => SIGPIPE,
-        'SIGALRM' => SIGALRM,
-        'SIGTERM' => SIGTERM,
-        'SIGSTKFLT' => SIGSTKFLT,
-        'SIGCLD' => SIGCLD,
-        'SIGCHLD' => SIGCHLD,
-        'SIGCONT' => SIGCONT,
-        'SIGTSTP' => SIGTSTP,
-        'SIGTTIN' => SIGTTIN,
-        'SIGTTOU' => SIGTTOU,
-        'SIGURG' => SIGURG,
-        'SIGXCPU' => SIGXCPU,
-        'SIGXFSZ' => SIGXFSZ,
-        'SIGVTALRM' => SIGVTALRM,
-        'SIGPROF' => SIGPROF,
-        'SIGWINCH' => SIGWINCH,
-        'SIGPOLL' => SIGPOLL,
-        'SIGIO' => SIGIO,
-        'SIGPWR' => SIGPWR,
-        'SIGSYS' => SIGSYS,
-        'SIGBABY' => SIGBABY,
-    ];
-
-    public const UNSUPPORTED_SIGNALS = [
-        'SIGKILL' => SIGKILL,
-        'SIGSTOP' => SIGSTOP,
-    ];
-
     /** @var EventDispatcherInterface|EventDispatcher */
     protected $dispatcher;
     /** @var array */
@@ -107,10 +66,10 @@ class SignalHandlerService
     private function getSignalCode($signal): int
     {
         $signalCode = null;
-        if (is_int($signal) && in_array($signal, self::SUPPORTED_SIGNALS, true)) {
+        if (is_int($signal) && in_array($signal, SignalConstants::SUPPORTED_SIGNALS, true)) {
             $signalCode = $signal;
-        } elseif (is_string($signal) && isset(self::SUPPORTED_SIGNALS[$signal])) {
-            $signalCode = self::SUPPORTED_SIGNALS[$signal];
+        } elseif (is_string($signal) && isset(SignalConstants::SUPPORTED_SIGNALS[$signal])) {
+            $signalCode = SignalConstants::SUPPORTED_SIGNALS[$signal];
         }
 
         if (null === $signalCode) {
