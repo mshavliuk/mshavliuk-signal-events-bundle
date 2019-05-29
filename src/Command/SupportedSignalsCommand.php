@@ -4,18 +4,33 @@ namespace Mshavliuk\SignalEventsBundle\Command;
 
 use Mshavliuk\SignalEventsBundle\Service\SignalConstants;
 use RuntimeException;
+use Safe\Exceptions\FilesystemException;
+use Safe\Exceptions\JsonException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Process\Process;
+use function Safe\fopen;
+use function Safe\fwrite;
+use function Safe\fclose;
+use function Safe\json_encode;
 
-class SupportedSignalsSearcher extends Command
+class SupportedSignalsCommand extends Command
 {
     public function __construct()
     {
         parent::__construct('supported-signals');
     }
 
+    /**
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     *
+     * @throws FilesystemException
+     * @throws JsonException
+     *
+     * @return int|void|null
+     */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $supportedSignals = [];
