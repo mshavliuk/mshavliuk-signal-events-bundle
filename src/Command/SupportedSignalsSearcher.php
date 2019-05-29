@@ -2,7 +2,7 @@
 
 namespace Mshavliuk\SignalEventsBundle\Command;
 
-use Mshavliuk\SignalEventsBundle\Service\SignalHandlerService;
+use Mshavliuk\SignalEventsBundle\Service\SignalConstants;
 use RuntimeException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -13,7 +13,7 @@ class SupportedSignalsSearcher extends Command
 {
     public function __construct()
     {
-        parent::__construct('supported-signals-searcher');
+        parent::__construct('supported-signals');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -21,14 +21,14 @@ class SupportedSignalsSearcher extends Command
         $supportedSignals = [];
         $phpVersion = PHP_VERSION;
         $output->writeln('php version: '.$phpVersion);
-        foreach (SignalHandlerService::SUPPORTED_SIGNALS as $signalName => $signal) {
-            $process = new Process(['bin/console', 'signal-handler', $signalName]);
+        foreach (SignalConstants::SIGNALS as $signalName => $signal) {
+            $process = new Process(['php', dirname(__DIR__).'/../bin/simpleSignalHandler', $signalName]);
             $process->start();
-            $process->setTimeout(5000);
+            $process->setTimeout(100);
             try {
                 $process->waitUntil(
                     static function ($type, $data) {
-                        return 'out' === $type && SignalHandlerCommand::READY_MESSAGE === trim($data);
+                        return 'out' === $type && 'ready' === trim($data);
                     });
                 if ($process->isRunning()) {
                     $process->signal($signal);

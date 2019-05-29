@@ -1,0 +1,25 @@
+#!/usr/bin/env php
+
+<?php
+
+$signal = constant($argv[1]);
+
+pcntl_async_signals(true);
+$ready = pcntl_signal(
+    $signal,
+    static function () {
+        echo 'success'.PHP_EOL;
+        die();
+    }
+);
+
+if ($ready) {
+    echo 'ready'.PHP_EOL;
+} else {
+    echo 'unknown signal'.PHP_EOL;
+    die();
+}
+
+while (true) {
+    usleep(1000);
+}
