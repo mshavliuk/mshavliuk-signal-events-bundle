@@ -24,7 +24,8 @@
             "Mshavliuk\\SignalEventsBundle\\": "src/"
         },
         "exclude-from-classmap": [
-            "/Tests/"
+            "/Tests/",
+            "/Command/"
         ]
     },
     "require-dev": {
@@ -34,12 +35,15 @@
         "symfony/console": "~2.3 || ~3.0 || ~4.0",
         "symfony/framework-bundle": "^4.2",
         "friendsofphp/php-cs-fixer": "^2.15@dev",
-        "phpstan/phpstan": "^0.11.0@dev"
+        "phpstan/phpstan": "^0.11.0@dev",
+        "thecodingmachine/safe": "^0.1.15",
+        "phpstan/phpstan-symfony": "^0.11.6",
+        "phpstan/phpstan-phpunit": "^0.11.2"
     },
     "scripts": {
-        "test": "vendor/bin/phpunit tests",
-        "csfix": "vendor/bin/php-cs-fixer fix src/ --config=.php_cs.dist --verbose",
-        "analyse": "vendor/bin/phpstan analyse src/ -c phpstan.neon --no-progress --level=7 -vvv"
+        "test": "vendor/bin/phpunit src/Tests",
+        "csfix": "vendor/bin/php-cs-fixer fix src/ bin/ --config=.php_cs.dist --verbose",
+        "analyse": "vendor/bin/phpstan analyse src/ bin/ -c phpstan.neon --no-progress --level=7 -vvv"
     },
     "minimum-stability": "dev",
     "prefer-stable": true
