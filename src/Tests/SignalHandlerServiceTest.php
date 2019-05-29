@@ -2,27 +2,34 @@
 
 declare(strict_types=1);
 
+namespace Mshavliuk\SignalEventsBundle\Tests;
+
 use Mshavliuk\SignalEventsBundle\Service\SignalHandlerService;
 use PHPUnit\Framework\TestCase;
+use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\Process\Process;
 
-class SignalHandlerServiceTest extends TestCase
+class SignalHandlerServiceTest extends KernelTestCase
 {
-    public function testConstructor()
+    /** @var SignalHandlerService */
+    protected $signalHandlerService;
+
+    protected function setUp(): void
     {
-        $handler = new SignalHandlerService();
-        $this->assertInstanceOf(SignalHandlerService::class, $handler);
+        $kernel = self::bootKernel();
+        $this->signalHandlerService = $kernel->getContainer()->get(SignalHandlerService::class);
     }
+
 
     /**
      * @dataProvider providerSignalNames
      *
-     * @param $signalName
-     * @param $signal
+     * @param string $signalName
+     * @param int $signal
      */
-    public function testSignalHandlerHandleSignal($signalName, $signal)
+    public function testSignalHandlerHandleSignal(string $signalName, int $signal)
     {
-        $handler = new SignalHandlerService();
         $handledSignal = null;
         $handler->addSignalHandler(
             static function ($signal, $signalInfo = null) use (&$handledSignal) {

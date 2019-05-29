@@ -2,6 +2,7 @@
 
 namespace Mshavliuk\SignalEventsBundle\DependencyInjection;
 
+use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 use function method_exists;
@@ -24,6 +25,7 @@ class Configuration implements ConfigurationInterface
             $root = $builder->root('signal_events');
         }
 
+        /* @var ArrayNodeDefinition $root */
         $root
             ->children()
                 ->arrayNode('start_at')->beforeNormalization()

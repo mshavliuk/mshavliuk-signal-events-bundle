@@ -4,14 +4,15 @@ declare(strict_types=1);
 
 namespace Mshavliuk\SignalEventsBundle\Service;
 
+use Closure;
 use Mshavliuk\SignalEventsBundle\Event\SignalEvent;
 use RuntimeException;
+use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class SignalHandlerService
 {
     public const SUPPORTED_SIGNALS = [
-        'SIG_IGN' => SIG_IGN,
         'SIGHUP' => SIGHUP,
         'SIGINT' => SIGINT,
         'SIGQUIT' => SIGQUIT,
@@ -48,55 +49,97 @@ class SignalHandlerService
     ];
 
     public const UNSUPPORTED_SIGNALS = [
-        'SIG_DFL' => SIG_DFL,
-        'SIG_ERR' => SIG_ERR,
         'SIGKILL' => SIGKILL,
         'SIGSTOP' => SIGSTOP,
     ];
 
-    /**
-     * @var EventDispatcherInterface
-     */
+    /** @var EventDispatcherInterface|EventDispatcher */
     protected $dispatcher;
-    protected $handledSignals;
+    /** @var array */
+    protected $observableSignals;
+    /** @var Closure */
+    private $signalHandler;
 
-    public function __construct(EventDispatcherInterface $dispatcher, $signals)
+    /**
+     * SignalHandlerService constructor.
+     *
+     * @param EventDispatcherInterface $dispatcher
+     */
+    public function __construct(EventDispatcherInterface $dispatcher)
     {
-        pcntl_async_signals(true);
-
         $this->dispatcher = $dispatcher;
+        $this->signalHandler = $this->makeSignalHandler();
+        $this->enable();
+    }
 
-        $this->handledSignals = $signals;
-
+    public function addObservableSignals(array $signals): self
+    {
         foreach ($signals as $signal) {
-            if (!pcntl_signal($signal, [$this, 'handleSignal'])) {
+            $signalCode = $this->getSignalCode($signal);
+            if (!pcntl_signal($signalCode, $this->signalHandler)) {
                 throw new RuntimeException('Cannot set signal handler');
             }
+            $this->observableSignals[] = $signalCode;
         }
+
+        return $this;
+    }
+
+    public function removeObservableSignal($signal): self
+    {
+        $signalCode = $this->getSignalCode($signal);
+        if (false !== ($key = array_search($signalCode, $this->observableSignals, true))) {
+            unset($this->observableSignals[$key]);      // TODO: test is array don't have any holes
+            pcntl_signal($signalCode, SIG_DFL);
+        }
+
+        return $this;
     }
 
     /**
-     * @param $signal
-     * @param null $signalInfo
-     *
-     * @internal
+     * @return array
      */
-    public function handleSignal($signal, $signalInfo = null)
+    public function getObservableSignals(): array
     {
-        $event = new SignalEvent($signal, $signalInfo);
-        $this->dispatcher->dispatch($event, SignalEvent::NAME);
+        return $this->observableSignals;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getHandledSignals()
+    private function getSignalCode($signal): int
     {
-        return $this->handledSignals;
+        $signalCode = null;
+        if (is_int($signal) && in_array($signal, self::SUPPORTED_SIGNALS, true)) {
+            $signalCode = $signal;
+        } elseif (is_string($signal) && isset(self::SUPPORTED_SIGNALS[$signal])) {
+            $signalCode = self::SUPPORTED_SIGNALS[$signal];
+        }
+
+        if (null === $signalCode) {
+            throw new RuntimeException("$signal is not supported signal");
+        }
+
+        return $signalCode;
+    }
+
+    private function makeSignalHandler(): callable
+    {
+        return function (int $signal, $signalInfo = null) {
+            $event = new SignalEvent($signal, $signalInfo);
+            $this->dispatcher->dispatch($event, SignalEvent::NAME);
+        };
+    }
+
+    public function enable()
+    {
+        pcntl_async_signals(true);
+    }
+
+    public function disable()
+    {
+        pcntl_async_signals(false);
     }
 
     public function __destruct()
     {
-        pcntl_async_signals(false);
+        $this->disable();
     }
 }

@@ -13,7 +13,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 class SignalHandlerCommand extends Command
 {
     public const READY_MESSAGE = 'Handler is ready to handle signal';
-    protected const SIGNAL_ARGUMENT = 'signal-argument';
+    protected const SIGNAL_ARGUMENT = 'signal';
 
     /**
      * @var SignalHandlerService
@@ -35,7 +35,7 @@ class SignalHandlerCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $signalName = $input->getArgument(self::SIGNAL_ARGUMENT);
+        $signalName = (string) $input->getArgument(self::SIGNAL_ARGUMENT);
         $signal = constant($signalName);
         if (null === $signal) {
             $output->writeln('PHP don\'t know this type of signal');
