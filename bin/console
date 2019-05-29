@@ -2,7 +2,7 @@
 
 <?php
 
-use Mshavliuk\SignalEventsBundle\Command\SupportedSignalsSearcher;
+use Mshavliuk\SignalEventsBundle\Command\SupportedSignalsCommand;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Input\ArgvInput;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -13,6 +13,6 @@ $application = new Application();
 
 $containerBuilder = new ContainerBuilder();
 
-$application->add(new SupportedSignalsSearcher());
+$application->add(new SupportedSignalsCommand());
 $input = new ArgvInput();
 $application->run($input);
