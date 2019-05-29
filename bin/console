@@ -3,8 +3,6 @@
 <?php
 
 use Mshavliuk\SignalEventsBundle\Command\SupportedSignalsSearcher;
-use Mshavliuk\SignalEventsBundle\Command\SignalHandlerCommand;
-use Mshavliuk\SignalEventsBundle\Service\SignalHandlerService;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Input\ArgvInput;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -12,16 +10,9 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 require dirname(__DIR__).'/vendor/autoload.php';
 
 $application = new Application();
-$service = new SignalHandlerService();
 
 $containerBuilder = new ContainerBuilder();
 
-$containerBuilder->register(SignalHandlerService::class)->setPublic(true)->setAutoconfigured(true)->setAutowired(true);
-$containerBuilder->register(SignalHandlerCommand::class)->setPublic(true)->setAutoconfigured(true)->setAutowired(true);
-$containerBuilder->register(SupportedSignalsSearcher::class)->setPublic(true)->setAutoconfigured(true)->setAutowired(true);
-$containerBuilder->compile();
-$command = $containerBuilder->get(SignalHandlerCommand::class);
-$command2 = $containerBuilder->get(SupportedSignalsSearcher::class);
-$application->addCommands([$command, $command2]);
+$application->add(new SupportedSignalsSearcher());
 $input = new ArgvInput();
 $application->run($input);
