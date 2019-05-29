@@ -27,31 +27,39 @@ class SignalEventsExtension extends Extension
 
         $loader->load('services.yaml');
 
-        $this->defineHandleService($container);
-        $this->defineEventListener($container);
+        $serviceDefinition = $this->defineHandleService($container);
+        if ($container->hasParameter('signal_events.start_at')) {
+            $this->defineEventListener($container, $container->getParameter('signal_events.start_at'));
+            $serviceDefinition->addMethodCall('addObservableSignals', ['%signal_events.handle_signals%']);
+        }
     }
 
     /**
      * @param ContainerBuilder $container
+     *
+     * @return Definition
      */
-    protected function defineHandleService(ContainerBuilder $container): void
+    protected function defineHandleService(ContainerBuilder $container): Definition
     {
         $definition = new Definition(SignalHandlerService::class);
-        $definition->setArguments(['$signals' => '%signal_events.handle_signals%']);
         $definition->setPublic(true);
         $definition->setAutowired(true);
         $container->setDefinition(SignalHandlerService::class, $definition);
         $container->setAlias('signal_events.handle_service', SignalHandlerService::class);
+
+        return $definition;
     }
 
-    protected function defineEventListener(ContainerBuilder $container): void
+    protected function defineEventListener(ContainerBuilder $container, $events): Definition
     {
         $definition = new Definition(ServiceStartupListener::class);
         $definition->setAutowired(true);
-        foreach ($container->getParameter('signal_events.start_at') as $event) {
+        foreach ($events as $event) {
             $definition->addTag('kernel.event_listener', ['event' => $event, 'method' => 'handleStartupEvent']);
         }
         $container->setDefinition(ServiceStartupListener::class, $definition);
+
+        return $definition;
     }
 
     /**

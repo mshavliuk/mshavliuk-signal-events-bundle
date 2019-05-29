@@ -5,31 +5,35 @@ namespace Mshavliuk\SignalEventsBundle\EventListener;
 use Exception;
 use Mshavliuk\SignalEventsBundle\Service\SignalHandlerService;
 use Symfony\Component\Console\Event\ConsoleCommandEvent;
-use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Contracts\EventDispatcher\Event;
 
 class ServiceStartupListener
 {
-    /**
-     * @var Container
-     */
+    /** @var ContainerInterface */
     protected $container;
+    /** @var bool */
+    protected $initialized = false;
 
+    /**
+     * ServiceStartupListener constructor.
+     * @param ContainerInterface $container
+     */
     public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
     }
-
-    protected $startupEvents;
 
     /**
      * @param Event|ConsoleCommandEvent $event
      *
      * @throws Exception
      */
-    public function handleStartupEvent($event)
+    public function handleStartupEvent($event): void
     {
-        $this->container->get(SignalHandlerService::class);
+        if (!$this->initialized) {
+            $this->container->get(SignalHandlerService::class);
+            $this->initialized = true;
+        }
     }
 }

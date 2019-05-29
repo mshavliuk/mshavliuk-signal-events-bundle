@@ -22,7 +22,10 @@
     "autoload": {
         "psr-4": {
             "Mshavliuk\\SignalEventsBundle\\": "src/"
-        }
+        },
+        "exclude-from-classmap": [
+            "/Tests/"
+        ]
     },
     "require-dev": {
         "roave/security-advisories": "dev-master",
