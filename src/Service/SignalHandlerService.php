@@ -14,7 +14,7 @@ class SignalHandlerService
     /** @var EventDispatcherInterface|EventDispatcher */
     protected $dispatcher;
     /** @var array */
-    protected $observableSignals;
+    protected $observableSignals = [];
     /** @var callable */
     private $signalHandler;
 
@@ -50,9 +50,14 @@ class SignalHandlerService
      */
     public function removeObservableSignal($signal): self
     {
-        $signalCode = $this->getSignalCode($signal);
+        try {
+            $signalCode = $this->getSignalCode($signal);
+        } catch (RuntimeException $e) {
+            return $this;
+        }
+
         if (false !== ($key = array_search($signalCode, $this->observableSignals, true))) {
-            unset($this->observableSignals[$key]);      // TODO: test is array don't have any holes
+            unset($this->observableSignals[$key]);
             pcntl_signal($signalCode, SIG_DFL);
         }
 
