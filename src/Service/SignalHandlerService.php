@@ -80,7 +80,9 @@ class SignalHandlerService
     private function getSignalCode($signal): int
     {
         $signalCode = null;
-        if (is_int($signal) && in_array($signal, SignalConstants::SUPPORTED_SIGNALS, true)) {
+        if (is_int($signal)
+            && $signal >= SignalConstants::MIN_VALID_SIGNAL && $signal <= SignalConstants::MAX_VALID_SIGNAL
+            && !in_array($signal, SignalConstants::UNSUPPORTED_SIGNALS, true)) {
             $signalCode = $signal;
         } elseif (is_string($signal) && isset(SignalConstants::SUPPORTED_SIGNALS[$signal])) {
             $signalCode = SignalConstants::SUPPORTED_SIGNALS[$signal];

@@ -45,5 +45,8 @@ interface SignalConstants
         'SIGSTOP' => SIGSTOP,
     ];
 
+    public const MIN_VALID_SIGNAL = 1;
+    public const MAX_VALID_SIGNAL = 31;
+
     public const SIGNALS = self::SUPPORTED_SIGNALS + self::UNSUPPORTED_SIGNALS;
 }
