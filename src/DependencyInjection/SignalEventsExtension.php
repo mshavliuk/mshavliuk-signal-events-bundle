@@ -4,7 +4,6 @@ namespace Mshavliuk\SignalEventsBundle\DependencyInjection;
 
 use Exception;
 use Mshavliuk\SignalEventsBundle\EventListener\ServiceStartupListener;
-use Mshavliuk\SignalEventsBundle\Service\SignalHandlerService;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
@@ -23,31 +22,19 @@ class SignalEventsExtension extends Extension
      */
     public function load(array $configs, ContainerBuilder $container)
     {
+        $configuration = $this->getConfiguration($configs, $container);
+        $config = $this->processConfiguration($configuration, $configs);
+
+
         $loader = new YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
 
         $loader->load('services.yaml');
 
-        $serviceDefinition = $this->defineHandleService($container);
-        if ($container->hasParameter('signal_events.start_at')) {
-            $this->defineEventListener($container, $container->getParameter('signal_events.start_at'));
-            $serviceDefinition->addMethodCall('addObservableSignals', ['%signal_events.handle_signals%']);
+        $serviceDefinition = $container->findDefinition('signal_events.handle_service');
+        if ($config['startup_events']) {
+            $this->defineEventListener($container, $config['startup_events']);
+            $serviceDefinition->addMethodCall('addObservableSignals', $config['handle_signals']);
         }
-    }
-
-    /**
-     * @param ContainerBuilder $container
-     *
-     * @return Definition
-     */
-    protected function defineHandleService(ContainerBuilder $container): Definition
-    {
-        $definition = new Definition(SignalHandlerService::class);
-        $definition->setPublic(true);
-        $definition->setAutowired(true);
-        $container->setDefinition(SignalHandlerService::class, $definition);
-        $container->setAlias('signal_events.handle_service', SignalHandlerService::class);
-
-        return $definition;
     }
 
     protected function defineEventListener(ContainerBuilder $container, $events): Definition

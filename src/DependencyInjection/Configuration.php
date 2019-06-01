@@ -2,10 +2,13 @@
 
 namespace Mshavliuk\SignalEventsBundle\DependencyInjection;
 
+use Mshavliuk\SignalEventsBundle\Service\SignalConstants;
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 use function method_exists;
+use Symfony\Component\Console\ConsoleEvents;
+use Symfony\Component\HttpKernel\KernelEvents;
 
 class Configuration implements ConfigurationInterface
 {
@@ -28,22 +31,28 @@ class Configuration implements ConfigurationInterface
         /* @var ArrayNodeDefinition $root */
         $root
             ->children()
-                ->arrayNode('start_at')->beforeNormalization()
+                ->arrayNode('startup_events')
+                    ->defaultValue([
+                        ConsoleEvents::COMMAND,
+                        KernelEvents::REQUEST,
+                    ])
+                    ->beforeNormalization()
                     ->ifString()
                         ->then(static function ($v) { return [$v]; })
                     ->end()
                     ->requiresAtLeastOneElement()
                     ->prototype('scalar')
-                    ->defaultValue('%signal_events.start_at%')
+                    ->defaultValue('%signal_events.startup_events%')
                     ->end()
                 ->end()
-                ->arrayNode('handle_signals')->beforeNormalization()
+                ->arrayNode('handle_signals')
+                    ->defaultValue(SignalConstants::SUPPORTED_SIGNALS)
+                    ->beforeNormalization()
                     ->ifString()
                         ->then(static function ($v) { return [$v]; })
                     ->end()
                     ->requiresAtLeastOneElement()
                     ->prototype('scalar')
-                    ->defaultValue('%signal_events.handle_signals%')
                     ->end()
                 ->end();
 
