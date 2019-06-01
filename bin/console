@@ -10,9 +10,6 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 require dirname(__DIR__).'/vendor/autoload.php';
 
 $application = new Application();
-
-$containerBuilder = new ContainerBuilder();
-
 $application->add(new SupportedSignalsCommand());
 $input = new ArgvInput();
 $application->run($input);

@@ -8,6 +8,7 @@ use Safe\Exceptions\FilesystemException;
 use Safe\Exceptions\JsonException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Process\Process;
 use function Safe\fopen;
@@ -20,6 +21,18 @@ class SupportedSignalsCommand extends Command
     public function __construct()
     {
         parent::__construct('supported-signals');
+    }
+
+    protected function configure(): void
+    {
+        $this->setDescription('Check which signals can be handled by php pcntl_signal function')
+            ->addOption(
+                'signals',
+                '-s',
+                InputOption::VALUE_IS_ARRAY | InputOption::VALUE_OPTIONAL,
+                'Signals to check(space separated)',
+                array_flip(SignalConstants::SIGNALS)
+            );
     }
 
     /**
@@ -36,17 +49,18 @@ class SupportedSignalsCommand extends Command
         $supportedSignals = [];
         $phpVersion = PHP_VERSION;
         $output->writeln('php version: '.$phpVersion);
-        foreach (SignalConstants::SIGNALS as $signalName => $signal) {
+        $signals = $input->getOption('signals');
+        foreach ($signals as $signalName) {
             $process = new Process(['php', dirname(__DIR__).'/../bin/simpleSignalHandler', $signalName]);
             $process->start();
-            $process->setTimeout(100);
+            $process->setTimeout(1);
             try {
                 $process->waitUntil(
                     static function ($type, $data) {
                         return 'out' === $type && 'ready' === trim($data);
                     });
                 if ($process->isRunning()) {
-                    $process->signal($signal);
+                    $process->signal(constant($signalName));
                     $process->wait();
                 } else {
                     $output->writeln("$signalName: fail (process died while trying to start)");
@@ -69,11 +83,14 @@ class SupportedSignalsCommand extends Command
             }
         }
 
-        $fp = fopen(dirname(__DIR__)."/../var/{$phpVersion}_supports.json", 'wb');
+        $reportPath = implode(DIRECTORY_SEPARATOR, [dirname(__DIR__, 2), 'var', '']);
+        $reportName = "{$phpVersion}_supported_signals.json";
+        $fp = fopen($reportPath.$reportName, 'wb');
         fwrite($fp, json_encode([
             'phpVersion' => $phpVersion,
             'supportedSignals' => $supportedSignals,
         ]));
         fclose($fp);
+        $output->writeln('report was written in '.$reportPath.$reportName);
     }
 }
