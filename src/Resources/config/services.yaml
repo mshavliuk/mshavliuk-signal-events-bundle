@@ -1,5 +1,7 @@
-parameters:
-  signal_events.handle_signals: !php/const Mshavliuk\SignalEventsBundle\Service\SignalConstants::SUPPORTED_SIGNALS
-  signal_events.start_at:
-    - !php/const Symfony\Component\Console\ConsoleEvents::COMMAND
-    - !php/const Symfony\Component\HttpKernel\KernelEvents::REQUEST
+services:
+    Mshavliuk\SignalEventsBundle\Service\SignalHandlerService:
+        public: true
+        autowire: true
+        autoconfigure: true
+
+    signal_events.handle_service: '@Mshavliuk\SignalEventsBundle\Service\SignalHandlerService'
