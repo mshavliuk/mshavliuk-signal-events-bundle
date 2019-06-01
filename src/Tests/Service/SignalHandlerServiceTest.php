@@ -135,6 +135,27 @@ class SignalHandlerServiceTest extends TestCase
         $this->assertEquals($eventName, SignalEvent::NAME);
     }
 
+
+    /**
+     * @dataProvider providerSupportedSignals
+     *
+     * @param string $signalName
+     * @param int $signal
+     */
+    public function testSignalHandlerWillAddSignalInformationInEvent(string $signalName, int $signal)
+    {
+        $this->dispatcher->expects($spy = $this->once())->method('dispatch');
+        $this->signalHandlerService->addObservableSignals([$signalName]);
+
+        posix_kill(posix_getpid(), $signal);
+        [$event, ] = $spy->getInvocations()[0]->getParameters();
+        /* @var SignalEvent $event */
+        $signalInfo = $event->getSignalInfo();
+        $this->assertNotEmpty($signalInfo);
+        $this->assertSame($signal, $signalInfo['signo']);
+
+    }
+
     /**
      * @dataProvider providerRemovedSignals
      *
