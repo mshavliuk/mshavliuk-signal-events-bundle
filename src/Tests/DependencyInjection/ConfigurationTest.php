@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Mshavliuk\MshavliukSignalEventsBundle\Tests\DependencyInjection;
 
 use Mshavliuk\MshavliukSignalEventsBundle\DependencyInjection\Configuration;
