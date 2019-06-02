@@ -51,7 +51,7 @@ class MshavliukSignalEventsExtensionTest extends TestCase
      */
     public function testContainerHasAlias(): void
     {
-        $alias = 'signal_events.handle_service';
+        $alias = 'mshavliuk_signal_events.handle_service';
 
         $container = $this->getContainer();
         $container->hasAlias($alias);

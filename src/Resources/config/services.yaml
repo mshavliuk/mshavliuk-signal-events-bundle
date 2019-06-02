@@ -1,11 +1,11 @@
 services:
-    Mshavliuk\SignalEventsBundle\Service\SignalHandlerService:
+    Mshavliuk\MshavliukSignalEventsBundle\Service\SignalHandlerService:
         public: true
         autowire: true
         autoconfigure: true
 
-    Mshavliuk\SignalEventsBundle\Command\SupportedSignalsCommand:
+    Mshavliuk\MshavliukSignalEventsBundle\Command\SupportedSignalsCommand:
         tags:
             - {name: 'console.command', command: 'signal-events:supported-signals'}
 
-    signal_events.handle_service: '@Mshavliuk\SignalEventsBundle\Service\SignalHandlerService'
+    mshavliuk_signal_events.handle_service: '@Mshavliuk\MshavliukSignalEventsBundle\Service\SignalHandlerService'

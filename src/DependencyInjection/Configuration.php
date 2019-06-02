@@ -18,13 +18,13 @@ class Configuration implements ConfigurationInterface
      */
     public function getConfigTreeBuilder(): TreeBuilder
     {
-        $builder = new TreeBuilder('signal_events');
+        $builder = new TreeBuilder('mshavliuk_signal_events');
 
         if (method_exists($builder, 'getRootNode')) {
             $root = $builder->getRootNode();
         } else {
             // symfony < 4.2 support
-            $root = $builder->root('signal_events');
+            $root = $builder->root('mshavliuk_signal_events');
         }
 
         /* @var ArrayNodeDefinition $root */
@@ -39,7 +39,7 @@ class Configuration implements ConfigurationInterface
                         ->then(static function ($v) { return [$v]; })
                         ->end()
                     ->prototype('scalar')
-                    ->defaultValue('%signal_events.startup_events%')
+                    ->defaultValue('%mshavliuk_signal_events.startup_events%')
                     ->end()
                 ->end()
                 ->arrayNode('handle_signals')
