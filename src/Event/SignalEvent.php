@@ -36,4 +36,9 @@ class SignalEvent extends Event
     {
         return $this->signalInfo;
     }
+
+    public function __toString()
+    {
+        return "signal $this->signal";
+    }
 }
