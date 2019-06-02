@@ -33,7 +33,7 @@ class MshavliukSignalEventsExtension extends Extension
         if ($config['startup_events']) {
             $serviceDefinition = $container->findDefinition('mshavliuk_signal_events.handle_service');
             $this->defineEventListener($container, $config['startup_events']);
-            $serviceDefinition->addMethodCall('addObservableSignals', $config['handle_signals']);
+            $serviceDefinition->addMethodCall('addObservableSignals', ['$signals' => $config['handle_signals']]);
         }
     }
 
