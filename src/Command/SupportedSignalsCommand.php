@@ -55,10 +55,10 @@ class SupportedSignalsCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $supportedSignals = [];
         $phpVersion = PHP_VERSION;
         $output->writeln('php version: '.$phpVersion);
         $signals = $input->getOption('signals');
+        $supportedSignals = [];
         foreach ($signals as $signalName) {
             [
                 'message' => $message,
@@ -94,7 +94,8 @@ class SupportedSignalsCommand extends Command
      */
     protected function checkSignalSupport($signalName): array
     {
-        $process = new Process(['php', dirname(__DIR__).'/../bin/simpleSignalHandler', $signalName]);
+        $executedCode = str_replace('%signal%', constant($signalName), self::PHP_CODE);
+        $process = new Process(['php', '-r', $executedCode]);
         $process->start();
         $process->setTimeout(1);
         try {
@@ -122,4 +123,15 @@ class SupportedSignalsCommand extends Command
             'support' => true,
         ];
     }
+
+    protected const PHP_CODE = <<<'PHP'
+        pcntl_async_signals(true);
+        if(pcntl_signal(%signal%, function () { echo 'success'.PHP_EOL; die(0); })) {
+            echo 'ready'.PHP_EOL;
+        } else {
+            echo 'unknown signal'.PHP_EOL;
+            die(1);
+        }
+        usleep(1e7);
+PHP;
 }
