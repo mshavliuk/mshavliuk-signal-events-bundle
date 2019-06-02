@@ -1,10 +1,9 @@
 <?php
 
-namespace Mshavliuk\SignalEventsBundle\Tests\Command;
+namespace Mshavliuk\MshavliukSignalEventsBundle\Tests\Command;
 
 use Exception;
-use Generator;
-use Mshavliuk\SignalEventsBundle\Command\SupportedSignalsCommand;
+use Mshavliuk\MshavliukSignalEventsBundle\Command\SupportedSignalsCommand;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Input\ArrayInput;

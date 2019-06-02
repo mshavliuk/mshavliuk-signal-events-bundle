@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Mshavliuk\SignalEventsBundle\Tests\Service;
+namespace Mshavliuk\MshavliukSignalEventsBundle\Tests\Service;
 
 use Generator;
-use Mshavliuk\SignalEventsBundle\Event\SignalEvent;
-use Mshavliuk\SignalEventsBundle\Service\SignalConstants;
-use Mshavliuk\SignalEventsBundle\Service\SignalHandlerService;
+use Mshavliuk\MshavliukSignalEventsBundle\Event\SignalEvent;
+use Mshavliuk\MshavliukSignalEventsBundle\Service\SignalConstants;
+use Mshavliuk\MshavliukSignalEventsBundle\Service\SignalHandlerService;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;

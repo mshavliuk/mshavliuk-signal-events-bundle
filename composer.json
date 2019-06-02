@@ -22,7 +22,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Mshavliuk\\SignalEventsBundle\\": "src/"
+            "Mshavliuk\\MshavliukSignalEventsBundle\\": "src/"
         },
         "exclude-from-classmap": [
             "/Tests/",

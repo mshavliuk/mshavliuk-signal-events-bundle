@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Mshavliuk\SignalEventsBundle\Service;
+namespace Mshavliuk\MshavliukSignalEventsBundle\Service;
 
-use Mshavliuk\SignalEventsBundle\Event\SignalEvent;
+use Mshavliuk\MshavliukSignalEventsBundle\Event\SignalEvent;
 use RuntimeException;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;

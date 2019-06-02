@@ -1,6 +1,6 @@
 <?php
 
-namespace Mshavliuk\SignalEventsBundle\Service;
+namespace Mshavliuk\MshavliukSignalEventsBundle\Service;
 
 interface SignalConstants
 {

@@ -1,8 +1,8 @@
 <?php
 
-namespace Mshavliuk\SignalEventsBundle\Tests\DependencyInjection;
+namespace Mshavliuk\MshavliukSignalEventsBundle\Tests\DependencyInjection;
 
-use Mshavliuk\SignalEventsBundle\DependencyInjection\Configuration;
+use Mshavliuk\MshavliukSignalEventsBundle\DependencyInjection\Configuration;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Config\Definition\Processor;
 
