@@ -1,17 +1,17 @@
 {
-    "name":        "mshavliuk/symfony-signal-events-bundle",
+    "name":        "mshavliuk/mshavliuk-signal-events-bundle",
     "type":        "symfony-bundle",
     "description": "Symfony bundle to handle process signals (kill, ctrl+c etc.)",
     "keywords":    ["symfony", "console", "pcntl", "cli", "bundle"],
-    "homepage":    "http://github.com/mshavliuk/symfony-signal-handler",
+    "homepage":    "https://github.com/mshavliuk/mshavliuk-signal-events-bundle",
     "license":     "MIT",
     "support":     {
-        "issues": "https://github.com/mshavliuk/symfony-signal-handler/issues"
+        "issues": "https://github.com/mshavliuk/mshavliuk-signal-events-bundle/issues"
     },
     "authors": [
         {
             "name":     "Mikhail Shavliuk",
-            "email":    "mshavliuk@ya.ru"
+            "email":    "mikhail.shavliuk@ya.ru"
         }
     ],
     "require": {
