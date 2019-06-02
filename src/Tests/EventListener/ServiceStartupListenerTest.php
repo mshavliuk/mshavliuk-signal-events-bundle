@@ -7,7 +7,7 @@ use Mshavliuk\SignalEventsBundle\EventListener\ServiceStartupListener;
 use Mshavliuk\SignalEventsBundle\Service\SignalHandlerService;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\EventDispatcher\Event;
+use Symfony\Contracts\EventDispatcher\Event;
 
 class ServiceStartupListenerTest extends TestCase
 {

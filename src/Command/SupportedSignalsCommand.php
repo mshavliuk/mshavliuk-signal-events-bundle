@@ -2,21 +2,14 @@
 
 namespace Mshavliuk\SignalEventsBundle\Command;
 
+use Exception;
 use Mshavliuk\SignalEventsBundle\Service\SignalConstants;
 use RuntimeException;
-use Safe\Exceptions\FilesystemException;
-use Safe\Exceptions\JsonException;
-use Safe\Exceptions\StringsException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Process\Process;
-use function Safe\fopen;
-use function Safe\fwrite;
-use function Safe\fclose;
-use function Safe\json_encode;
-use function Safe\sprintf;
 
 class SupportedSignalsCommand extends Command
 {
@@ -27,13 +20,16 @@ class SupportedSignalsCommand extends Command
 
     protected function configure(): void
     {
+        /** @var array<string> $defaultSignals */
+        $defaultSignals = array_values(array_flip(SignalConstants::SIGNALS));
+
         $this->setDescription('Check which signals can be handled by php pcntl_signal function')
             ->addOption(
                 'signals',
                 '-s',
                 InputOption::VALUE_IS_ARRAY | InputOption::VALUE_OPTIONAL,
                 'Signals to check(space separated)',
-                array_flip(SignalConstants::SIGNALS)
+                $defaultSignals
             )
             ->addOption(
                 'output',
@@ -47,16 +43,13 @@ class SupportedSignalsCommand extends Command
      * @param InputInterface $input
      * @param OutputInterface $output
      *
-     * @throws FilesystemException
-     * @throws JsonException
-     * @throws StringsException
-     *
      * @return int|void|null
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $phpVersion = PHP_VERSION;
         $output->writeln('php version: '.$phpVersion);
+        /** @var array<string> $signals */
         $signals = $input->getOption('signals');
         $supportedSignals = [];
         foreach ($signals as $signalName) {
@@ -70,29 +63,61 @@ class SupportedSignalsCommand extends Command
             $output->writeln($message);
         }
 
-        if ($input->hasOption('output')) {
-            $reportFilePath = $input->getOption('output');
+        if (null !== $input->getOption('output')) {
+            $reportFilePath = (string) $input->getOption('output');
         } else {
             $reportFilePath = implode(DIRECTORY_SEPARATOR, [dirname(__DIR__, 2), 'var', '']).$phpVersion.'_supported_signals.json';
         }
 
-        $fp = fopen($reportFilePath, 'wb');
-        fwrite($fp, json_encode([
-            'phpVersion' => $phpVersion,
-            'supportedSignals' => $supportedSignals,
-        ]));
-        fclose($fp);
-        $output->writeln('report was written in '.$reportFilePath);
+        if ($this->writeReportFile($reportFilePath, $supportedSignals, $phpVersion)) {
+            $output->writeln('report was written in '.$reportFilePath);
+
+            return 0;
+        }
+
+        $output->writeln('there is some errors during write report file');
+
+        return 1;
     }
 
     /**
-     * @param $signalName
+     * @param string $reportFilePath
+     * @param array<string> $supportedSignals
+     * @param string $phpVersion
      *
-     * @throws StringsException
+     * @return bool
+     */
+    protected function writeReportFile(string $reportFilePath, array $supportedSignals, string $phpVersion): bool
+    {
+        try {
+            $fp = fopen($reportFilePath, 'wb');
+            if (false !== $fp) {
+                $content = json_encode(
+                    [
+                        'phpVersion' => $phpVersion,
+                        'supportedSignals' => $supportedSignals,
+                    ]
+                );
+                if (false !== $content) {
+                    fwrite($fp, $content);
+                    fclose($fp);
+
+                    return true;
+                }
+                fclose($fp);
+            }
+        } catch (Exception $exception) {
+        }
+
+        return false;
+    }
+
+    /**
+     * @param string $signalName
      *
      * @return array
      */
-    protected function checkSignalSupport($signalName): array
+    protected function checkSignalSupport(string $signalName): array
     {
         $executedCode = str_replace('%signal%', constant($signalName), self::PHP_CODE);
         $process = new Process(['php', '-r', $executedCode]);
@@ -132,6 +157,8 @@ class SupportedSignalsCommand extends Command
             echo 'unknown signal'.PHP_EOL;
             die(1);
         }
-        usleep(1e7);
+        while(true) {
+            usleep(1e7);
+        }
 PHP;
 }

@@ -3,7 +3,7 @@
 namespace Mshavliuk\SignalEventsBundle\Tests\Command;
 
 use Exception;
-use function file_get_contents;
+use Generator;
 use Mshavliuk\SignalEventsBundle\Command\SupportedSignalsCommand;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Application;
@@ -12,34 +12,75 @@ use Symfony\Component\Console\Output\BufferedOutput;
 
 class SupportedSignalsCommandTest extends TestCase
 {
+    /** @var Application */
+    protected $application;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->application = new Application();
+        $this->application->setAutoExit(false);
+        $this->application->add(new SupportedSignalsCommand());
+    }
+
     /**
-     * @param $signal
+     * @param string $signal
+     *
      * @throws Exception
      * @dataProvider providerFewSignals
      */
-    public function testCommandWillCreateReportFileAfterExecution($signal): void
+    public function testCommandWillExitWithZeroCode($signal): void
     {
-        $application = new Application();
-        $application->setAutoExit(false);
-        $application->add(new SupportedSignalsCommand());
+        $input = new ArrayInput([
+            'command' => 'supported-signals',
+            '-s' => [$signal],
+        ]);
+        $output = new BufferedOutput();
+        $exitCode = $this->application->run($input, $output);
+        $this->assertSame(0, $exitCode);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testCommandWillCreateReportFileInSpecifiedPlace(): void
+    {
+        $signal = 'SIGINT';
         $tempFile = tempnam(sys_get_temp_dir(), 'supported_signals_command_test_'.$signal).'.json';
         $input = new ArrayInput([
             'command' => 'supported-signals',
             '-s' => [$signal],
             '-o' => $tempFile,
         ]);
-        $output = new BufferedOutput();
-        $exitCode = $application->run($input, $output);
-        $this->assertSame(0, $exitCode);
+        $this->application->run($input);
         $this->assertFileExists($tempFile);
-        $this->assertJson(file_get_contents($tempFile));
+        $fileContent = file_get_contents($tempFile);
+        $this->assertNotFalse($fileContent);
+        $this->assertJson($fileContent);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function testCommandWillReturnErrorCodeIfCannotWriteReportFile(): void
+    {
+        $tempFile = '/some/unexisted/directory/report.json';
+        $this->assertFileNotExists($tempFile);
+        $input = new ArrayInput([
+            'command' => 'supported-signals',
+            '-s' => ['SIGINT'],
+            '-o' => $tempFile,
+        ]);
+        $exitCode = $this->application->run($input);
+        $this->assertNotEquals(0, $exitCode);
     }
 
     public function providerFewSignals(): array
     {
         return [
             'SIGINT' => ['SIGINT'],
-            'SIGSTOP' => ['SIGSTOP'],
+            'SIGSTOP ' => ['SIGSTOP'],
             'SIGKILL' => ['SIGKILL'],
         ];
     }

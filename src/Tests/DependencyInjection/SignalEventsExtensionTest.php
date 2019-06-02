@@ -2,6 +2,7 @@
 
 namespace Mshavliuk\SignalEventsBundle\Tests\DependencyInjection;
 
+use Exception;
 use Mshavliuk\SignalEventsBundle\Command\SupportedSignalsCommand;
 use Mshavliuk\SignalEventsBundle\DependencyInjection\SignalEventsExtension;
 use Mshavliuk\SignalEventsBundle\EventListener\ServiceStartupListener;
@@ -15,13 +16,13 @@ use Symfony\Component\HttpKernel\KernelEvents;
 
 class SignalEventsExtensionTest extends TestCase
 {
-    public function testContainerHasDefinition()
+    public function testContainerHasDefinition(): void
     {
         $container = $this->getContainer();
         $this->assertTrue($container->hasDefinition(SignalHandlerService::class));
     }
 
-    public function testContainerHasAlias()
+    public function testContainerHasAlias(): void
     {
         $alias = 'signal_events.handle_service';
 
@@ -34,7 +35,7 @@ class SignalEventsExtensionTest extends TestCase
         $this->assertDICDefinitionClass($definitionByAlias, SignalHandlerService::class);
     }
 
-    public function testContainerWillRegisterCommand()
+    public function testContainerWillRegisterCommand(): void
     {
         $container = $this->getContainer();
         $this->assertTrue($container->hasDefinition(SupportedSignalsCommand::class));
@@ -43,7 +44,7 @@ class SignalEventsExtensionTest extends TestCase
     /**
      * @dataProvider providerSignals
      *
-     * @param $signals
+     * @param array<string> $signals
      */
     public function testSetMethodCallWithSignals($signals): void
     {
@@ -57,9 +58,9 @@ class SignalEventsExtensionTest extends TestCase
     /**
      * @dataProvider providerStartupEvents
      *
-     * @param $events
+     * @param array<string> $events
      */
-    public function testListenerWillSetEventTags($events)
+    public function testListenerWillSetEventTags($events): void
     {
         $container = $this->getContainer([['startup_events' => $events]]);
 
@@ -69,14 +70,14 @@ class SignalEventsExtensionTest extends TestCase
         $this->assertCount(count($events), $tags);
     }
 
-    public function testGetAliasFunctionWillReturnString()
+    public function testGetAliasFunctionWillReturnString(): void
     {
         $extension = new SignalEventsExtension();
         $this->assertIsString($extension->getAlias());
         $this->assertNotEmpty($extension->getAlias());
     }
 
-    public function providerStartupEvents()
+    public function providerStartupEvents(): array
     {
         return [
             'console' => [[ConsoleEvents::COMMAND]],
@@ -85,7 +86,7 @@ class SignalEventsExtensionTest extends TestCase
         ];
     }
 
-    public function providerSignals()
+    public function providerSignals(): array
     {
         return [
             'SIGINT' => [['SIGINT']],
@@ -104,15 +105,6 @@ class SignalEventsExtensionTest extends TestCase
     protected function assertDICDefinitionClass($definition, $expectedClass): void
     {
         $this->assertEquals($expectedClass, $definition->getClass(), 'Expected Class of the DIC Container Service Definition is wrong.');
-    }
-
-    /**
-     * @param Definition $definition
-     * @param array $args
-     */
-    protected function assertDICConstructorArguments($definition, $args): void
-    {
-        $this->assertEquals($args, $definition->getArguments(), "Expected and actual DIC Service constructor arguments of definition '".$definition->getClass()."' don't match.");
     }
 
     /**
@@ -135,12 +127,16 @@ class SignalEventsExtensionTest extends TestCase
         }
     }
 
-    protected function getContainer(array $config = [], array $thirdPartyDefinitions = [])
+    /**
+     * @param array $config
+     *
+     * @throws Exception
+     *
+     * @return ContainerBuilder
+     */
+    protected function getContainer(array $config = []): ContainerBuilder
     {
         $container = new ContainerBuilder();
-        foreach ($thirdPartyDefinitions as $id => $definition) {
-            $container->setDefinition($id, $definition);
-        }
 
         $container->getCompilerPassConfig()->setOptimizationPasses([]);
         $container->getCompilerPassConfig()->setRemovingPasses([]);

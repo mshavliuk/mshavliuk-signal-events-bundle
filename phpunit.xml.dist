@@ -10,7 +10,9 @@
     <php>
         <!-- ###+ symfony/framework-bundle ### -->
         <env name="SYMFONY_DEPRECATIONS_HELPER" value="weak" />
+        <env name="SHELL_VERBOSITY" value="-1" force="true"/>
         <ini name="error_reporting" value="-1" />
+        <ini name="display_errors" value="0" />
         <!-- ###- symfony/framework-bundle ### -->
     </php>
 
