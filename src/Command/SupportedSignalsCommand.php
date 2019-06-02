@@ -6,6 +6,7 @@ use Mshavliuk\SignalEventsBundle\Service\SignalConstants;
 use RuntimeException;
 use Safe\Exceptions\FilesystemException;
 use Safe\Exceptions\JsonException;
+use Safe\Exceptions\StringsException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -15,6 +16,7 @@ use function Safe\fopen;
 use function Safe\fwrite;
 use function Safe\fclose;
 use function Safe\json_encode;
+use function Safe\sprintf;
 
 class SupportedSignalsCommand extends Command
 {
@@ -32,6 +34,12 @@ class SupportedSignalsCommand extends Command
                 InputOption::VALUE_IS_ARRAY | InputOption::VALUE_OPTIONAL,
                 'Signals to check(space separated)',
                 array_flip(SignalConstants::SIGNALS)
+            )
+            ->addOption(
+                'output',
+                '-o',
+                InputOption::VALUE_OPTIONAL,
+                'Output report path'
             );
     }
 
@@ -41,6 +49,7 @@ class SupportedSignalsCommand extends Command
      *
      * @throws FilesystemException
      * @throws JsonException
+     * @throws StringsException
      *
      * @return int|void|null
      */
@@ -51,46 +60,66 @@ class SupportedSignalsCommand extends Command
         $output->writeln('php version: '.$phpVersion);
         $signals = $input->getOption('signals');
         foreach ($signals as $signalName) {
-            $process = new Process(['php', dirname(__DIR__).'/../bin/simpleSignalHandler', $signalName]);
-            $process->start();
-            $process->setTimeout(1);
-            try {
-                $process->waitUntil(
-                    static function ($type, $data) {
-                        return 'out' === $type && 'ready' === trim($data);
-                    });
-                if ($process->isRunning()) {
-                    $process->signal(constant($signalName));
-                    $process->wait();
-                } else {
-                    $output->writeln("$signalName: fail (process died while trying to start)");
-                    continue;
-                }
-            } catch (RuntimeException $e) {
-                $output->writeln("$signalName: fail (".$e->getMessage().')');
-                continue;
-            } finally {
-                if ($process->isRunning()) {
-                    $output->writeln('process stay running after signal');
-                    $process->signal(SIGKILL);
-                }
-            }
-            if ($process->isSuccessful()) {
-                $output->writeln("$signalName: success (".$process->getExitCodeText().')');
+            [
+                'message' => $message,
+                'support' => $support,
+            ] = $this->checkSignalSupport($signalName);
+            if ($support) {
                 $supportedSignals[] = $signalName;
-            } else {
-                $output->writeln("$signalName: fail (process was halted)");
             }
+            $output->writeln($message);
         }
 
-        $reportPath = implode(DIRECTORY_SEPARATOR, [dirname(__DIR__, 2), 'var', '']);
-        $reportName = "{$phpVersion}_supported_signals.json";
-        $fp = fopen($reportPath.$reportName, 'wb');
+        if ($input->hasOption('output')) {
+            $reportFilePath = $input->getOption('output');
+        } else {
+            $reportFilePath = implode(DIRECTORY_SEPARATOR, [dirname(__DIR__, 2), 'var', '']).$phpVersion.'_supported_signals.json';
+        }
+
+        $fp = fopen($reportFilePath, 'wb');
         fwrite($fp, json_encode([
             'phpVersion' => $phpVersion,
             'supportedSignals' => $supportedSignals,
         ]));
         fclose($fp);
-        $output->writeln('report was written in '.$reportPath.$reportName);
+        $output->writeln('report was written in '.$reportFilePath);
+    }
+
+    /**
+     * @param $signalName
+     *
+     * @throws StringsException
+     *
+     * @return array
+     */
+    protected function checkSignalSupport($signalName): array
+    {
+        $process = new Process(['php', dirname(__DIR__).'/../bin/simpleSignalHandler', $signalName]);
+        $process->start();
+        $process->setTimeout(1);
+        try {
+            $process->waitUntil(
+                static function ($type, $data) {
+                    return 'out' === $type && 'ready' === trim($data);
+                });
+            $process->signal(constant($signalName));
+            $process->wait();
+        } catch (RuntimeException $e) {
+            return [
+                'message' => sprintf('%s: fail (%s)', $signalName, $e->getMessage()),
+                'support' => false,
+            ];
+        }
+        if (!$process->isSuccessful()) {
+            return [
+                'message' => sprintf('%s: fail (%s)', $signalName, 'process was halted'),
+                'support' => false,
+            ];
+        }
+
+        return [
+            'message' => sprintf('%s: success (%s)', $signalName, $process->getExitCodeText()),
+            'support' => true,
+        ];
     }
 }
