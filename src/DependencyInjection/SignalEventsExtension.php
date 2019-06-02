@@ -25,13 +25,12 @@ class SignalEventsExtension extends Extension
         $configuration = $this->getConfiguration($configs, $container);
         $config = $this->processConfiguration($configuration, $configs);
 
-
         $loader = new YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
 
         $loader->load('services.yaml');
 
-        $serviceDefinition = $container->findDefinition('signal_events.handle_service');
         if ($config['startup_events']) {
+            $serviceDefinition = $container->findDefinition('signal_events.handle_service');
             $this->defineEventListener($container, $config['startup_events']);
             $serviceDefinition->addMethodCall('addObservableSignals', $config['handle_signals']);
         }

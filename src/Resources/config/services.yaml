@@ -4,4 +4,8 @@ services:
         autowire: true
         autoconfigure: true
 
+    Mshavliuk\SignalEventsBundle\Command\SupportedSignalsCommand:
+        tags:
+            - {name: 'console.command', command: 'signal-events:supported-signals'}
+
     signal_events.handle_service: '@Mshavliuk\SignalEventsBundle\Service\SignalHandlerService'

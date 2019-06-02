@@ -8,7 +8,6 @@ use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 use function method_exists;
 use Symfony\Component\Console\ConsoleEvents;
-use Symfony\Component\HttpKernel\KernelEvents;
 
 class Configuration implements ConfigurationInterface
 {
@@ -34,13 +33,11 @@ class Configuration implements ConfigurationInterface
                 ->arrayNode('startup_events')
                     ->defaultValue([
                         ConsoleEvents::COMMAND,
-                        KernelEvents::REQUEST,
                     ])
                     ->beforeNormalization()
                     ->ifString()
                         ->then(static function ($v) { return [$v]; })
-                    ->end()
-                    ->requiresAtLeastOneElement()
+                        ->end()
                     ->prototype('scalar')
                     ->defaultValue('%signal_events.startup_events%')
                     ->end()
@@ -50,8 +47,7 @@ class Configuration implements ConfigurationInterface
                     ->beforeNormalization()
                     ->ifString()
                         ->then(static function ($v) { return [$v]; })
-                    ->end()
-                    ->requiresAtLeastOneElement()
+                        ->end()
                     ->prototype('scalar')
                     ->end()
                 ->end();

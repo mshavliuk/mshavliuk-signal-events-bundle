@@ -2,6 +2,7 @@
 
 namespace Mshavliuk\SignalEventsBundle\Tests\DependencyInjection;
 
+use Mshavliuk\SignalEventsBundle\Command\SupportedSignalsCommand;
 use Mshavliuk\SignalEventsBundle\DependencyInjection\SignalEventsExtension;
 use Mshavliuk\SignalEventsBundle\EventListener\ServiceStartupListener;
 use Mshavliuk\SignalEventsBundle\Service\SignalConstants;
@@ -33,8 +34,15 @@ class SignalEventsExtensionTest extends TestCase
         $this->assertDICDefinitionClass($definitionByAlias, SignalHandlerService::class);
     }
 
+    public function testContainerWillRegisterCommand()
+    {
+        $container = $this->getContainer();
+        $this->assertTrue($container->hasDefinition(SupportedSignalsCommand::class));
+    }
+
     /**
      * @dataProvider providerSignals
+     *
      * @param $signals
      */
     public function testSetMethodCallWithSignals($signals): void
@@ -60,7 +68,6 @@ class SignalEventsExtensionTest extends TestCase
         $tags = $startupListenerDefinition->getTag('kernel.event_listener');
         $this->assertCount(count($events), $tags);
     }
-
 
     public function testGetAliasFunctionWillReturnString()
     {
