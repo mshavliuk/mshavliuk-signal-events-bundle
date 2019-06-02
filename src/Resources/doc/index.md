@@ -60,3 +60,7 @@ public function __construct(SignalHandlerService $service)
     $service->addObservableSignals(['SIGINT', 'SIGHUP']);
 }
 ```
+
+## License ##
+
+See [LICENSE](LICENSE).
