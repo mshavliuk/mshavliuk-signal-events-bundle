@@ -1,17 +1,17 @@
 <?php
 
-namespace Mshavliuk\SignalEventsBundle\DependencyInjection;
+namespace Mshavliuk\MshavliukSignalEventsBundle\DependencyInjection;
 
 use Exception;
-use Mshavliuk\SignalEventsBundle\EventListener\ServiceStartupListener;
+use Mshavliuk\MshavliukSignalEventsBundle\EventListener\ServiceStartupListener;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
+use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
-use Symfony\Component\Config\FileLocator;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 
-class SignalEventsExtension extends Extension
+class MshavliukSignalEventsExtension extends Extension
 {
     /**
      * Loads a specific configuration.
@@ -37,6 +37,17 @@ class SignalEventsExtension extends Extension
         }
     }
 
+    /**
+     * @param array $config
+     * @param ContainerBuilder $container
+     *
+     * @return ConfigurationInterface
+     */
+    public function getConfiguration(array $config, ContainerBuilder $container)
+    {
+        return new Configuration();
+    }
+
     protected function defineEventListener(ContainerBuilder $container, $events): Definition
     {
         $definition = new Definition(ServiceStartupListener::class);
@@ -55,16 +66,5 @@ class SignalEventsExtension extends Extension
     public function getAlias()
     {
         return 'signal_events';
-    }
-
-    /**
-     * @param array $config
-     * @param ContainerBuilder $container
-     *
-     * @return ConfigurationInterface
-     */
-    public function getConfiguration(array $config, ContainerBuilder $container)
-    {
-        return new Configuration();
     }
 }

@@ -1,13 +1,13 @@
 <?php
 
-namespace Mshavliuk\SignalEventsBundle\DependencyInjection;
+namespace Mshavliuk\MshavliukSignalEventsBundle\DependencyInjection;
 
-use Mshavliuk\SignalEventsBundle\Service\SignalConstants;
+use Mshavliuk\MshavliukSignalEventsBundle\Service\SignalConstants;
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
-use function method_exists;
 use Symfony\Component\Console\ConsoleEvents;
+use function method_exists;
 
 class Configuration implements ConfigurationInterface
 {

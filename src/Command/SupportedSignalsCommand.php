@@ -1,9 +1,9 @@
 <?php
 
-namespace Mshavliuk\SignalEventsBundle\Command;
+namespace Mshavliuk\MshavliukSignalEventsBundle\Command;
 
 use Exception;
-use Mshavliuk\SignalEventsBundle\Service\SignalConstants;
+use Mshavliuk\MshavliukSignalEventsBundle\Service\SignalConstants;
 use RuntimeException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;

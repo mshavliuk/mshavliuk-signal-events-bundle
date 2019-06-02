@@ -1,27 +1,54 @@
 <?php
 
-namespace Mshavliuk\SignalEventsBundle\Tests\DependencyInjection;
+namespace Mshavliuk\MshavliukSignalEventsBundle\Tests\DependencyInjection;
 
 use Exception;
-use Mshavliuk\SignalEventsBundle\Command\SupportedSignalsCommand;
-use Mshavliuk\SignalEventsBundle\DependencyInjection\SignalEventsExtension;
-use Mshavliuk\SignalEventsBundle\EventListener\ServiceStartupListener;
-use Mshavliuk\SignalEventsBundle\Service\SignalConstants;
-use Mshavliuk\SignalEventsBundle\Service\SignalHandlerService;
+use Mshavliuk\MshavliukSignalEventsBundle\Command\SupportedSignalsCommand;
+use Mshavliuk\MshavliukSignalEventsBundle\DependencyInjection\MshavliukSignalEventsExtension;
+use Mshavliuk\MshavliukSignalEventsBundle\EventListener\ServiceStartupListener;
+use Mshavliuk\MshavliukSignalEventsBundle\Service\SignalConstants;
+use Mshavliuk\MshavliukSignalEventsBundle\Service\SignalHandlerService;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\ConsoleEvents;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\HttpKernel\KernelEvents;
 
-class SignalEventsExtensionTest extends TestCase
+class MshavliukSignalEventsExtensionTest extends TestCase
 {
+    /**
+     * @throws Exception
+     */
     public function testContainerHasDefinition(): void
     {
         $container = $this->getContainer();
         $this->assertTrue($container->hasDefinition(SignalHandlerService::class));
     }
 
+    /**
+     * @param array $config
+     *
+     * @throws Exception
+     *
+     * @return ContainerBuilder
+     */
+    protected function getContainer(array $config = []): ContainerBuilder
+    {
+        $container = new ContainerBuilder();
+
+        $container->getCompilerPassConfig()->setOptimizationPasses([]);
+        $container->getCompilerPassConfig()->setRemovingPasses([]);
+
+        $loader = new MshavliukSignalEventsExtension();
+        $loader->load($config, $container);
+        $container->compile();
+
+        return $container;
+    }
+
+    /**
+     * @throws Exception
+     */
     public function testContainerHasAlias(): void
     {
         $alias = 'signal_events.handle_service';
@@ -35,6 +62,24 @@ class SignalEventsExtensionTest extends TestCase
         $this->assertDICDefinitionClass($definitionByAlias, SignalHandlerService::class);
     }
 
+    /**
+     * Assertion on the Class of a DIC Service Definition.
+     *
+     * @param Definition $definition
+     * @param string $expectedClass
+     */
+    protected function assertDICDefinitionClass($definition, $expectedClass): void
+    {
+        $this->assertEquals(
+            $expectedClass,
+            $definition->getClass(),
+            'Expected Class of the DIC Container Service Definition is wrong.'
+        );
+    }
+
+    /**
+     * @throws Exception
+     */
     public function testContainerWillRegisterCommand(): void
     {
         $container = $this->getContainer();
@@ -45,6 +90,8 @@ class SignalEventsExtensionTest extends TestCase
      * @dataProvider providerSignals
      *
      * @param array<string> $signals
+     *
+     * @throws Exception
      */
     public function testSetMethodCallWithSignals($signals): void
     {
@@ -56,9 +103,39 @@ class SignalEventsExtensionTest extends TestCase
     }
 
     /**
+     * @param int $pos
+     * @param Definition $definition
+     * @param string $methodName
+     * @param array|null $params
+     */
+    protected function assertDICDefinitionMethodCallAt($pos, $definition, $methodName, array $params = null): void
+    {
+        $calls = $definition->getMethodCalls();
+        if (isset($calls[$pos][0])) {
+            $this->assertEquals(
+                $methodName,
+                $calls[$pos][0],
+                "Method '".$methodName."' is expected to be called at position $pos."
+            );
+
+            if (null !== $params) {
+                $this->assertEquals(
+                    $params,
+                    $calls[$pos][1],
+                    "Expected parameters to methods '".$methodName."' do not match the actual parameters."
+                );
+            }
+        } else {
+            $this->fail("Method '".$methodName."' is expected to be called at position $pos.");
+        }
+    }
+
+    /**
      * @dataProvider providerStartupEvents
      *
      * @param array<string> $events
+     *
+     * @throws Exception
      */
     public function testListenerWillSetEventTags($events): void
     {
@@ -72,7 +149,7 @@ class SignalEventsExtensionTest extends TestCase
 
     public function testGetAliasFunctionWillReturnString(): void
     {
-        $extension = new SignalEventsExtension();
+        $extension = new MshavliukSignalEventsExtension();
         $this->assertIsString($extension->getAlias());
         $this->assertNotEmpty($extension->getAlias());
     }
@@ -94,57 +171,5 @@ class SignalEventsExtensionTest extends TestCase
             'supported signals' => [SignalConstants::SUPPORTED_SIGNALS],
             'two signals' => [['SIGINT', 'SIGHUP']],
         ];
-    }
-
-    /**
-     * Assertion on the Class of a DIC Service Definition.
-     *
-     * @param Definition $definition
-     * @param string                                            $expectedClass
-     */
-    protected function assertDICDefinitionClass($definition, $expectedClass): void
-    {
-        $this->assertEquals($expectedClass, $definition->getClass(), 'Expected Class of the DIC Container Service Definition is wrong.');
-    }
-
-    /**
-     * @param int $pos
-     * @param Definition $definition
-     * @param string $methodName
-     * @param array|null $params
-     */
-    protected function assertDICDefinitionMethodCallAt($pos, $definition, $methodName, array $params = null): void
-    {
-        $calls = $definition->getMethodCalls();
-        if (isset($calls[$pos][0])) {
-            $this->assertEquals($methodName, $calls[$pos][0], "Method '".$methodName."' is expected to be called at position $pos.");
-
-            if (null !== $params) {
-                $this->assertEquals($params, $calls[$pos][1], "Expected parameters to methods '".$methodName."' do not match the actual parameters.");
-            }
-        } else {
-            $this->fail("Method '".$methodName."' is expected to be called at position $pos.");
-        }
-    }
-
-    /**
-     * @param array $config
-     *
-     * @throws Exception
-     *
-     * @return ContainerBuilder
-     */
-    protected function getContainer(array $config = []): ContainerBuilder
-    {
-        $container = new ContainerBuilder();
-
-        $container->getCompilerPassConfig()->setOptimizationPasses([]);
-        $container->getCompilerPassConfig()->setRemovingPasses([]);
-
-        $loader = new SignalEventsExtension();
-        $loader->load($config, $container);
-        $container->compile();
-
-        return $container;
     }
 }

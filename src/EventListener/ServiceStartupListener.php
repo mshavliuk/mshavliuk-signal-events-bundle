@@ -1,9 +1,9 @@
 <?php
 
-namespace Mshavliuk\SignalEventsBundle\EventListener;
+namespace Mshavliuk\MshavliukSignalEventsBundle\EventListener;
 
 use Exception;
-use Mshavliuk\SignalEventsBundle\Service\SignalHandlerService;
+use Mshavliuk\MshavliukSignalEventsBundle\Service\SignalHandlerService;
 use Symfony\Component\Console\Event\ConsoleCommandEvent;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Contracts\EventDispatcher\Event;

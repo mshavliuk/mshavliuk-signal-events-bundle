@@ -1,10 +1,10 @@
 <?php
 
-namespace Mshavliuk\SignalEventsBundle\Tests\EventListener;
+namespace Mshavliuk\MshavliukSignalEventsBundle\Tests\EventListener;
 
 use Exception;
-use Mshavliuk\SignalEventsBundle\EventListener\ServiceStartupListener;
-use Mshavliuk\SignalEventsBundle\Service\SignalHandlerService;
+use Mshavliuk\MshavliukSignalEventsBundle\EventListener\ServiceStartupListener;
+use Mshavliuk\MshavliukSignalEventsBundle\Service\SignalHandlerService;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Contracts\EventDispatcher\Event;
