@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Mshavliuk\MshavliukSignalEventsBundle\DependencyInjection;
 
 use Mshavliuk\MshavliukSignalEventsBundle\Service\SignalConstants;

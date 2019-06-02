@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Mshavliuk\MshavliukSignalEventsBundle\Tests\DependencyInjection;
 
 use Exception;
@@ -98,7 +100,7 @@ class MshavliukSignalEventsExtensionTest extends TestCase
         $container = $this->getContainer([['handle_signals' => $signals, 'startup_events' => ['console.event']]]);
 
         $serviceDefinition = $container->getDefinition(SignalHandlerService::class);
-        $this->assertDICDefinitionMethodCallAt(0, $serviceDefinition, 'addObservableSignals', $signals);
+        $this->assertDICDefinitionMethodCallAt(0, $serviceDefinition, 'addObservableSignals', ['$signals' => $signals]);
         $this->assertTrue($serviceDefinition->isPublic());
     }
 
