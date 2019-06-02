@@ -102,12 +102,12 @@ class SignalHandlerServiceTest extends TestCase
     /**
      * @dataProvider providerRemovedSignals
      *
-     * @param $initSignals
-     * @param $removeSignals
+     * @param array<string|int> $initSignals
+     * @param array<string|int> $removeSignals
      */
     public function testSignalHandlerWillRemoveSignal($initSignals, $removeSignals): void
     {
-        $this->signalHandlerService->addObservableSignals((array) $initSignals);
+        $this->signalHandlerService->addObservableSignals($initSignals);
         foreach ($removeSignals as $removeSignal) {
             $this->signalHandlerService->removeObservableSignal($removeSignal);
         }
@@ -157,8 +157,8 @@ class SignalHandlerServiceTest extends TestCase
     /**
      * @dataProvider providerRemovedSignals
      *
-     * @param $initSignals
-     * @param $removeSignals
+     * @param array<string|int> $initSignals
+     * @param array<string|int> $removeSignals
      */
     public function testSignalHandlerWillRestoreSignalHandlerAfterRemove($initSignals, $removeSignals): void
     {
@@ -178,7 +178,7 @@ class SignalHandlerServiceTest extends TestCase
     // TODO: SignalHandlerWillStopListenSignalsAfterDisable
     // TODO: SignalHandlerWillStartListenSignalsAfterEnable
 
-    public function providerUnsupportedSignals(): ?Generator
+    public function providerUnsupportedSignals(): Generator
     {
         foreach (SignalConstants::UNSUPPORTED_SIGNALS as $signalName => $signal) {
             yield $signalName => [$signalName, $signal];

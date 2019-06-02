@@ -17,7 +17,7 @@
     "require": {
         "php": "~7.1",
         "ext-pcntl": "*",
-        "symfony/event-dispatcher": "^4.4",
+        "symfony/event-dispatcher": "^4.3",
         "symfony/yaml": "^4.3"
     },
     "autoload": {
@@ -32,9 +32,9 @@
     "require-dev": {
         "roave/security-advisories": "dev-master",
         "phpunit/phpunit": "^8.1",
-        "symfony/process": "^4.2",
+        "symfony/process": "^4.3",
         "symfony/console": "~2.3 || ~3.0 || ~4.0",
-        "symfony/framework-bundle": "^4.2",
+        "symfony/framework-bundle": "^4.3",
         "friendsofphp/php-cs-fixer": "^2.15@dev",
         "phpstan/phpstan": "^0.11.0@dev",
         "thecodingmachine/safe": "^0.1.15",
@@ -43,8 +43,9 @@
     },
     "scripts": {
         "test": "vendor/bin/phpunit --configuration phpunit.xml.dist",
-        "csfix": "vendor/bin/php-cs-fixer fix src/ bin/ --config=.php_cs.dist --verbose",
-        "analyse": "vendor/bin/phpstan analyse src/ bin/ -c phpstan.neon --no-progress --level=7 -vvv"
+        "coverage": "vendor/bin/phpunit --configuration phpunit.xml.dist --coverage-html artifacts/coverage/",
+        "csfix": "vendor/bin/php-cs-fixer fix src/ --config=.php_cs.dist --verbose",
+        "analyse": "vendor/bin/phpstan analyse src/ -c phpstan.neon --no-progress --level=7 -vvv"
     },
     "minimum-stability": "dev",
     "prefer-stable": true

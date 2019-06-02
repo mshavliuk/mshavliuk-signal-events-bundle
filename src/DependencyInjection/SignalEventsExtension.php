@@ -4,6 +4,7 @@ namespace Mshavliuk\SignalEventsBundle\DependencyInjection;
 
 use Exception;
 use Mshavliuk\SignalEventsBundle\EventListener\ServiceStartupListener;
+use Symfony\Component\Config\Definition\ConfigurationInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
@@ -57,7 +58,10 @@ class SignalEventsExtension extends Extension
     }
 
     /**
-     * {@inheritdoc}
+     * @param array $config
+     * @param ContainerBuilder $container
+     *
+     * @return ConfigurationInterface
      */
     public function getConfiguration(array $config, ContainerBuilder $container)
     {
