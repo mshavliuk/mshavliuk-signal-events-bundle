@@ -102,7 +102,11 @@ class SignalHandlerService
     {
         return function (int $signal, $signalInfo = null) {
             $event = new SignalEvent($signal, $signalInfo);
-            $this->dispatcher->dispatch($event, SignalEvent::NAME);
+            if (method_exists($this->dispatcher, 'callListeners')) {
+                $this->dispatcher->dispatch($event, SignalEvent::NAME);
+            } else {
+                $this->dispatcher->dispatch(SignalEvent::NAME, $event);
+            }
         };
     }
 
