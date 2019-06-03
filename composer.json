@@ -35,14 +35,14 @@
     },
     "require-dev": {
         "roave/security-advisories": "dev-master",
-        "phpunit/phpunit": "^8.1",
         "friendsofphp/php-cs-fixer": "^2.15",
         "phpstan/phpstan": "^0.11.8",
         "phpstan/phpstan-symfony": "^0.11.6",
-        "phpstan/phpstan-phpunit": "^0.11.2"
+        "phpstan/phpstan-phpunit": "^0.11.2",
+        "symfony/phpunit-bridge": "^4.3"
     },
     "scripts": {
-        "test": "vendor/bin/phpunit --configuration phpunit.xml.dist",
+        "test": "vendor/bin/simple-phpunit --configuration phpunit.xml.dist",
         "coverage": "vendor/bin/phpunit --configuration phpunit.xml.dist --coverage-html artifacts/coverage/",
         "csfix": "vendor/bin/php-cs-fixer fix src/ --config=.php_cs.dist --verbose",
         "analyse": "vendor/bin/phpstan analyse src/ -c phpstan.neon --no-progress --level=7 -vvv"

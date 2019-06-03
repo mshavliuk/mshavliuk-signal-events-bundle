@@ -6,12 +6,12 @@ namespace Mshavliuk\MshavliukSignalEventsBundle\Command;
 
 use Exception;
 use Mshavliuk\MshavliukSignalEventsBundle\Service\SignalConstants;
-use RuntimeException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Process\Process;
+use Throwable;
 
 class SupportedSignalsCommand extends Command
 {
@@ -37,7 +37,13 @@ class SupportedSignalsCommand extends Command
                 'output',
                 '-o',
                 InputOption::VALUE_OPTIONAL,
-                'Output report path'
+                'Output report file path'
+            )
+            ->addOption(
+                'no-output',
+                null,
+                InputOption::VALUE_OPTIONAL | InputOption::VALUE_NONE,
+                'Prevent report file creation'
             );
     }
 
@@ -65,10 +71,15 @@ class SupportedSignalsCommand extends Command
             $output->writeln($message);
         }
 
+        if (true === $input->getOption('no-output')) {
+            return 0;
+        }
+
         if (null !== $input->getOption('output')) {
             $reportFilePath = (string) $input->getOption('output');
         } else {
-            $reportFilePath = implode(DIRECTORY_SEPARATOR, [dirname(__DIR__, 2), 'var', '']).$phpVersion.'_supported_signals.json';
+            $fileName = $phpVersion.'_supported_signals.json';
+            $reportFilePath = implode(DIRECTORY_SEPARATOR, [dirname(__DIR__, 2), 'var', '']).$fileName;
         }
 
         if ($this->writeReportFile($reportFilePath, $supportedSignals, $phpVersion)) {
@@ -77,7 +88,7 @@ class SupportedSignalsCommand extends Command
             return 0;
         }
 
-        $output->writeln('there is some errors during write report file');
+        $output->writeln('there is some errors during write report file '.$reportFilePath);
 
         return 1;
     }
@@ -126,13 +137,12 @@ class SupportedSignalsCommand extends Command
         $process->start();
         $process->setTimeout(1);
         try {
-            $process->waitUntil(
-                static function ($type, $data) {
-                    return 'out' === $type && 'ready' === trim($data);
-                });
+            while (false === strpos($process->getOutput(), 'ready') && $process->isRunning()) {
+                usleep(1000);
+            }
             $process->signal(constant($signalName));
             $process->wait();
-        } catch (RuntimeException $e) {
+        } catch (Throwable $e) {
             return [
                 'message' => sprintf('%s: fail (%s)', $signalName, $e->getMessage()),
                 'support' => false,

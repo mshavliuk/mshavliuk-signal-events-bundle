@@ -2,8 +2,6 @@
 
 declare(strict_types=1);
 
-declare(strict_types=1);
-
 namespace Mshavliuk\MshavliukSignalEventsBundle\Tests\Service;
 
 use Generator;
@@ -131,7 +129,10 @@ class SignalHandlerServiceTest extends TestCase
 
         posix_kill(posix_getpid(), $signal);
 
-        [$event, $eventName] = $spy->getInvocations()[0]->getParameters();
+        [
+            'event' => $event,
+            'name' => $eventName,
+        ] = $this->getEventDispatcherDispatchParams($spy->getInvocations()[0]->getParameters());
         /* @var SignalEvent $event */
         $this->assertEquals($event->getSignal(), $signal);
         $this->assertEquals($eventName, SignalEvent::NAME);
@@ -149,7 +150,8 @@ class SignalHandlerServiceTest extends TestCase
         $this->signalHandlerService->addObservableSignals([$signalName]);
 
         posix_kill(posix_getpid(), $signal);
-        [$event, ] = $spy->getInvocations()[0]->getParameters();
+
+        ['event' => $event] = $this->getEventDispatcherDispatchParams($spy->getInvocations()[0]->getParameters());
         /* @var SignalEvent $event */
         $signalInfo = $event->getSignalInfo();
         $this->assertNotEmpty($signalInfo);
@@ -220,6 +222,28 @@ class SignalHandlerServiceTest extends TestCase
             'remove empty' => [[SIGTRAP], []],
             'remove many' => [SignalConstants::SUPPORTED_SIGNALS, SignalConstants::SUPPORTED_SIGNALS],
             'remove another' => [SignalConstants::SUPPORTED_SIGNALS, SignalConstants::UNSUPPORTED_SIGNALS],
+        ];
+    }
+
+    /**
+     * extract EventDispatcher::dispatch params depending on EventDispatcher version.
+     *
+     * @param $params
+     *
+     * @return array
+     */
+    protected function getEventDispatcherDispatchParams($params): array
+    {
+        if (method_exists(EventDispatcher::class, 'callListeners')) {
+            return [
+                'event' => $params[0],
+                'name' => $params[1],
+            ];
+        }
+
+        return [
+            'event' => $params[1],
+            'name' => $params[0],
         ];
     }
 }
