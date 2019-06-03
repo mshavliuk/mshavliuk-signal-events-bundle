@@ -68,7 +68,8 @@ class SupportedSignalsCommand extends Command
         if (null !== $input->getOption('output')) {
             $reportFilePath = (string) $input->getOption('output');
         } else {
-            $reportFilePath = implode(DIRECTORY_SEPARATOR, [dirname(__DIR__, 2), 'var', '']).$phpVersion.'_supported_signals.json';
+            $fileName = $phpVersion.'_supported_signals.json';
+            $reportFilePath = implode(DIRECTORY_SEPARATOR, [dirname(__DIR__, 2), 'var', '']).$fileName;
         }
 
         if ($this->writeReportFile($reportFilePath, $supportedSignals, $phpVersion)) {
@@ -129,7 +130,8 @@ class SupportedSignalsCommand extends Command
             $process->waitUntil(
                 static function ($type, $data) {
                     return 'out' === $type && 'ready' === trim($data);
-                });
+                }
+            );
             $process->signal(constant($signalName));
             $process->wait();
         } catch (RuntimeException $e) {
