@@ -33,10 +33,12 @@ class SupportedSignalsCommandTest extends TestCase
      */
     public function testCommandWillExitWithZeroCode($signal): void
     {
-        $input = new ArrayInput([
-            'command' => 'supported-signals',
-            '-s' => [$signal],
-        ]);
+        $input = new ArrayInput(
+            [
+                'command' => 'supported-signals',
+                '-s' => [$signal],
+            ]
+        );
         $output = new BufferedOutput();
         $exitCode = $this->application->run($input, $output);
         $this->assertSame(0, $exitCode);
@@ -49,11 +51,13 @@ class SupportedSignalsCommandTest extends TestCase
     {
         $signal = 'SIGINT';
         $tempFile = tempnam(sys_get_temp_dir(), 'supported_signals_command_test_'.$signal).'.json';
-        $input = new ArrayInput([
-            'command' => 'supported-signals',
-            '-s' => [$signal],
-            '-o' => $tempFile,
-        ]);
+        $input = new ArrayInput(
+            [
+                'command' => 'supported-signals',
+                '-s' => [$signal],
+                '-o' => $tempFile,
+            ]
+        );
         $this->application->run($input);
         $this->assertFileExists($tempFile);
         $fileContent = file_get_contents($tempFile);
@@ -68,11 +72,13 @@ class SupportedSignalsCommandTest extends TestCase
     {
         $tempFile = '/some/unexisted/directory/report.json';
         $this->assertFileNotExists($tempFile);
-        $input = new ArrayInput([
-            'command' => 'supported-signals',
-            '-s' => ['SIGINT'],
-            '-o' => $tempFile,
-        ]);
+        $input = new ArrayInput(
+            [
+                'command' => 'supported-signals',
+                '-s' => ['SIGINT'],
+                '-o' => $tempFile,
+            ]
+        );
         $exitCode = $this->application->run($input);
         $this->assertNotEquals(0, $exitCode);
     }

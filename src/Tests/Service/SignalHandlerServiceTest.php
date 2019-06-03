@@ -2,8 +2,6 @@
 
 declare(strict_types=1);
 
-declare(strict_types=1);
-
 namespace Mshavliuk\MshavliukSignalEventsBundle\Tests\Service;
 
 use Generator;
@@ -149,7 +147,7 @@ class SignalHandlerServiceTest extends TestCase
         $this->signalHandlerService->addObservableSignals([$signalName]);
 
         posix_kill(posix_getpid(), $signal);
-        [$event, ] = $spy->getInvocations()[0]->getParameters();
+        [$event,] = $spy->getInvocations()[0]->getParameters();
         /* @var SignalEvent $event */
         $signalInfo = $event->getSignalInfo();
         $this->assertNotEmpty($signalInfo);
