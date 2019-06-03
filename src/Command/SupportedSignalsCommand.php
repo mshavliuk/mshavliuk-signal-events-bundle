@@ -37,7 +37,13 @@ class SupportedSignalsCommand extends Command
                 'output',
                 '-o',
                 InputOption::VALUE_OPTIONAL,
-                'Output report path'
+                'Output report file path'
+            )
+            ->addOption(
+                'no-output',
+                null,
+                InputOption::VALUE_OPTIONAL | InputOption::VALUE_NONE,
+                'Prevent report file creation'
             );
     }
 
@@ -63,6 +69,10 @@ class SupportedSignalsCommand extends Command
                 $supportedSignals[] = $signalName;
             }
             $output->writeln($message);
+        }
+
+        if (true === $input->getOption('no-output')) {
+            return 0;
         }
 
         if (null !== $input->getOption('output')) {
