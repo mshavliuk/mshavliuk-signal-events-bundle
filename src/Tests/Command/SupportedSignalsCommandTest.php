@@ -9,7 +9,6 @@ use Mshavliuk\MshavliukSignalEventsBundle\Command\SupportedSignalsCommand;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Input\ArrayInput;
-use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\Process\Process;
 
 class SupportedSignalsCommandTest extends TestCase
@@ -51,10 +50,10 @@ class SupportedSignalsCommandTest extends TestCase
             [
                 'command' => 'supported-signals',
                 '-s' => [$signal],
+                '--no-output' => true,
             ]
         );
-        $output = new BufferedOutput();
-        $exitCode = $this->application->run($input, $output);
+        $exitCode = $this->application->run($input);
         $this->assertSame(0, $exitCode);
     }
 
