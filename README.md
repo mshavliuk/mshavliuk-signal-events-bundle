@@ -1,5 +1,11 @@
 # MshavliukSignalEventsBundle #
 
+[![Latest Stable Version](https://poser.pugx.org/mshavliuk/mshavliuk-signal-events-bundle/v/stable)](https://packagist.org/packages/mshavliuk/mshavliuk-signal-events-bundle)
+[![Total Downloads](https://poser.pugx.org/mshavliuk/mshavliuk-signal-events-bundle/downloads)](https://packagist.org/packages/mshavliuk/mshavliuk-signal-events-bundle)
+[![Latest Unstable Version](https://poser.pugx.org/mshavliuk/mshavliuk-signal-events-bundle/v/unstable)](https://packagist.org/packages/mshavliuk/mshavliuk-signal-events-bundle)
+[![License](https://poser.pugx.org/mshavliuk/mshavliuk-signal-events-bundle/license)](https://packagist.org/packages/mshavliuk/mshavliuk-signal-events-bundle)
+[![Build Status](https://travis-ci.org/mshavliuk/mshavliuk-signal-events-bundle.svg?branch=master)](https://travis-ci.org/mshavliuk/mshavliuk-signal-events-bundle)
+
 ## About ##
 
 This bundle provides service, that emits events for every handled UNIX signals into your Symfony application. It relies
