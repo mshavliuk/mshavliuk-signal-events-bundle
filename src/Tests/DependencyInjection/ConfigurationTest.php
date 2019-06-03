@@ -15,10 +15,10 @@ class ConfigurationTest extends TestCase
         $processor = new Processor();
 
         $config = $processor->processConfiguration(new Configuration(), []);
-        $this->assertIsArray($config['startup_events']);
+        $this->assertInternalType('array', $config['startup_events']);
         $this->assertNotEmpty($config['startup_events']);
 
-        $this->assertIsArray($config['handle_signals']);
+        $this->assertInternalType('array', $config['handle_signals']);
         $this->assertNotEmpty($config['handle_signals']);
     }
 }
