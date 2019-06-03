@@ -152,7 +152,7 @@ class MshavliukSignalEventsExtensionTest extends TestCase
     public function testGetAliasFunctionWillReturnString(): void
     {
         $extension = new MshavliukSignalEventsExtension();
-        $this->assertIsString($extension->getAlias());
+        $this->assertInternalType('string', $extension->getAlias());
         $this->assertNotEmpty($extension->getAlias());
     }
 
