@@ -8,7 +8,7 @@ use Exception;
 use Mshavliuk\MshavliukSignalEventsBundle\Service\SignalHandlerService;
 use Symfony\Component\Console\Event\ConsoleCommandEvent;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Contracts\EventDispatcher\Event;
+use Symfony\Component\EventDispatcher\Event;
 
 class ServiceStartupListener
 {
