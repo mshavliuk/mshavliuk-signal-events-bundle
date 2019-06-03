@@ -6,13 +6,12 @@ namespace Mshavliuk\MshavliukSignalEventsBundle\Command;
 
 use Exception;
 use Mshavliuk\MshavliukSignalEventsBundle\Service\SignalConstants;
-use RuntimeException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Process\Exception\LogicException;
 use Symfony\Component\Process\Process;
+use Throwable;
 
 class SupportedSignalsCommand extends Command
 {
@@ -133,7 +132,7 @@ class SupportedSignalsCommand extends Command
             }
             $process->signal(constant($signalName));
             $process->wait();
-        } catch (RuntimeException | LogicException $e) {
+        } catch (Throwable $e) {
             return [
                 'message' => sprintf('%s: fail (%s)', $signalName, $e->getMessage()),
                 'support' => false,
