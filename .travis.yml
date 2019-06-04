@@ -23,7 +23,7 @@ matrix:
         - php: '7.1'
         - php: '7.2'
         - php: '7.3'
-          env: COVERAGE=true PHPUNIT_FLAGS="-v --coverage-text"
+          env: COVERAGE=true PHPUNIT_FLAGS="-v --coverage-text --coverage-clover=coverage.xml" CODECOV_TOKEN="daa90c6b-1070-43c8-9b77-7acf3911ca9e"
 
             # Latest commit to master
         - php: '7.3'
@@ -47,3 +47,6 @@ script:
     # simple-phpunit is the PHPUnit wrapper provided by the PHPUnit Bridge component and
     # it helps with testing legacy code and deprecations (composer require symfony/phpunit-bridge)
     - ./vendor/bin/simple-phpunit $PHPUNIT_FLAGS
+
+after_success:
+    - bash <(curl -s https://codecov.io/bash)
