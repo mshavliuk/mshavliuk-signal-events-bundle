@@ -5,6 +5,7 @@
 [![Latest Unstable Version](https://poser.pugx.org/mshavliuk/mshavliuk-signal-events-bundle/v/unstable)](https://packagist.org/packages/mshavliuk/mshavliuk-signal-events-bundle)
 [![License](https://poser.pugx.org/mshavliuk/mshavliuk-signal-events-bundle/license)](https://packagist.org/packages/mshavliuk/mshavliuk-signal-events-bundle)
 [![Build Status](https://travis-ci.org/mshavliuk/mshavliuk-signal-events-bundle.svg?branch=master)](https://travis-ci.org/mshavliuk/mshavliuk-signal-events-bundle)
+[![codecov](https://codecov.io/gh/mshavliuk/mshavliuk-signal-events-bundle/branch/master/graph/badge.svg)](https://codecov.io/gh/mshavliuk/mshavliuk-signal-events-bundle)
 
 ## About ##
 
